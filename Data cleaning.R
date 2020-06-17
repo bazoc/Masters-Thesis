@@ -9,6 +9,8 @@ library(ggplot2)
 QNA <- read.csv("Original data/Quarterly national accounts original.csv", na.strings=c("","NA"))
 CPI <- read.csv("Original data/OECD Prices original.csv", na.strings=c("","NA"))
 BOI <- read.csv("Original data/OECD OG Big Boi.csv", na.strings=c("","NA"))
+BIS <- read.csv("Original data/BIS Property Prices Nominal.csv", na.strings=c("","NA"))
+BAL <- read.csv("Original data/ECB Total Assets FRED.csv", na.strings=c("","NA"))
 
 #Variable with eurozone countries
 eurozone <- c("Austria","Belgium","Cyprus","Estonia","Finland","France","Germany","Greece","Ireland","Italy","Latvia","Lithuania","Luxembourg","Malta","Netherlands","Portugal","Slovak Republic","Slovenia","Spain")
@@ -120,10 +122,10 @@ econ <- merge.data.frame(econ, house, all = T)
 #miss <- subset(econ,
 #               year >= 2000 & year <= 2018)
 #names <- colnames(miss)
-#for(i in 1:ncol(miss)) {
-#  count[i] = sum(is.na(miss[[i]]))
-#}
-#cbind(names,count) 
+for(i in 1:ncol(miss)) {
+  count[i] = sum(is.na(miss[[i]]))
+}
+cbind(names,count) 
 
 #GDP is good
 #Drop imputed rentals for housing
@@ -277,6 +279,42 @@ for(i in 1:nrow(BOI)) {
   BOI2015[i,8:16] <- (BOI[i,8:16]*100) / country[,8:16]
 }
 
-#Took the new data from the main economic indicators page, need the monetary policy variables to do the VAR. Should look at the BIS property prices database tommorrow. 
-#Re-read the priors paper. 
+#BIS Nominal small excel file
+BIS <- subset(BIS,
+              Reference.area %in% eurozone)
+rownames(BIS) <- NULL
+BIS <- select(BIS, -1, -2, -5, -6, -7, -8, -9)
+BIS <- pivot_longer(BIS, 3:119)
+colnames(BIS) <- c("ï..LOCATION", "Country", "yearqtr","BIS Nominal House Price")
 
+BIS$year = as.numeric(str_sub(BIS$yearqtr, 2, 5))
+BIS$qtr  = as.numeric(str_sub(BIS$yearqtr, 8, 8))
+BIS$yqtr = BIS$year + (BIS$qtr-1) / 4
+
+miss <- subset(BIS,
+               year >= 1999 &
+               year <= 2018)
+miss <- subset(miss,
+               is.na(miss$`BIS Nominal House Price`))
+
+unique(miss$Country)
+#Missing Slovenia Estonia Greece Luxembourg Malta Portgual Slavak Republic Austria Latvia
+miss1 <- subset(BOI,
+                year >= 1999 &
+               year <= 2018)
+miss1 <- subset(miss1,
+                is.na(miss1$`Nominal House Prices`))
+unique(miss1$Country)
+
+
+#ECB Balance
+BAL$DATE <- as.Date(BAL$DATE)
+
+#Getting the quarterly levels of each one, just the value every 3 months
+ECB <- matrix(rep(NA,560),nrow = 280, 2)
+for (i in 1:nrow(BAL)) {
+  if(i %% 3 == 1) {
+    num <- (i%/%3)+1
+    ECB[(num,2] <- BAL[i,2]
+  }
+}
