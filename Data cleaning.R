@@ -1,6 +1,7 @@
 setwd("~/Thesis")
 library(dplyr)
 library(tidyverse)
+library(tidyr)
 library(rio)
 library(stringr)
 library(ggplot2)
@@ -89,7 +90,7 @@ econ <- arrange(econ, Country, TIME)
 #Make a year and quarter variable
 econ$year = as.numeric(str_sub(econ$TIME, 1, 4))
 econ$qtr  = as.numeric(str_sub(econ$TIME, 7, 7))
-econ$yqtr = econ$year + econ$qtr / 4
+econ$yqtr = econ$year + (econ$qtr-1) / 4
 
 #OECD REAL HOUSE PRICES - They are seasonally adjusted
 RHO <- read.csv("Original data/OECD Real House prices.csv", na.strings=c("","NA"))
@@ -228,7 +229,7 @@ BOI <- arrange(BOI, Country, TIME)
 
 BOI$year = as.numeric(str_sub(BOI$TIME, 1, 4))
 BOI$qtr  = as.numeric(str_sub(BOI$TIME, 7, 7))
-BOI$yqtr = BOI$year + BOI$qtr / 4
+BOI$yqtr = BOI$year + (BOI$qtr-1) / 4
 
 #Check how it works
 count <- rep(NA, ncol(BOI))
@@ -258,13 +259,24 @@ for(i in unique(BOI$Country)) {
     lis <- matrix(c(tem,nah),nrow = length(tem), ncol = 2)
     BOI$t[lis[,1]] <- lis[,2]
 }
-
-
-timeindex(BOI)
-
-tem <- which(BOI$Country == "Ireland")
-
-colnames(BOI)
 library(plm)
 pboi <- pdata.frame(BOI, index = c("t","Country"))
-summary(pboi)
+
+#Reorder the columns
+BOI <- BOI[,c(1,2,3,11,12,13,17,4,5,6,7,8,9,10,14,15,16)]
+
+#Normalise everything so its in 100 = 2015
+ind2015 <- subset(BOI,
+                  yqtr == 2015.00)
+BOI2015 <- BOI
+country <- NULL
+BOI2015[,8:ncol(BOI)] <- NA
+for(i in 1:nrow(BOI)) {
+  country <- subset(ind2015,
+                    Country == BOI2015[i,2])
+  BOI2015[i,8:16] <- (BOI[i,8:16]*100) / country[,8:16]
+}
+
+#Took the new data from the main economic indicators page, need the monetary policy variables to do the VAR. Should look at the BIS property prices database tommorrow. 
+#Re-read the priors paper. 
+
