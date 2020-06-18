@@ -92,7 +92,7 @@ ass$lass <- log(ass$ECB.Assets)
 #Variable with all the country names
 countries <- unique(gdp$Country)
 countries <- sort(countries)
-countries <- countries[-1]
+
 
 #Variable names
 var_names <- c("lgdp", "lhou", "ldef", "lres", "vol", "lass")
@@ -146,11 +146,11 @@ for(i in 1:length(countries)) {
   lags <- c(lags, lagselect[[countries[i]]][1])
 }
 
-k = 4
+k = 2
 
 
 #The actual VAR
 for(i in 1:length(countries)) {
   model1[[countries[i]]] <- VAR(data[[countries[i]]], p = k, type = "const", season = NULL, exogen = NULL)
 }
-
+summary(model1[[1]])
