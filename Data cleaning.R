@@ -5,12 +5,15 @@ library(tidyr)
 library(rio)
 library(stringr)
 library(ggplot2)
+
+
 #Reading in two of the data sets
 QNA <- read.csv("Original data/Quarterly national accounts original.csv", na.strings=c("","NA"))
 CPI <- read.csv("Original data/OECD Prices original.csv", na.strings=c("","NA"))
 BOI <- read.csv("Original data/OECD OG Big Boi.csv", na.strings=c("","NA"))
 BIS <- read.csv("Original data/BIS Property Prices Nominal.csv", na.strings=c("","NA"))
-BAL <- read.csv("Original data/ECB Total Assets FRED.csv", na.strings=c("","NA"))
+BAL <- read.csv("Original data/ECB Total assets - Internal Liquidity Management.csv", na.strings=c("","NA"), header = F, skip = 4)
+VOL <- read.csv("Original data/STOXX 50 Volatility VSTOXX EUR Historical Data.csv", na.strings=c("-","NA"))
 
 #Variable with eurozone countries
 eurozone <- c("Austria","Belgium","Cyprus","Estonia","Finland","France","Germany","Greece","Ireland","Italy","Latvia","Lithuania","Luxembourg","Malta","Netherlands","Portugal","Slovak Republic","Slovenia","Spain")
@@ -306,15 +309,44 @@ miss1 <- subset(miss1,
                 is.na(miss1$`Nominal House Prices`))
 unique(miss1$Country)
 
+#ECB Balance sheet
+#Give Column names
+colnames(BAL) <- c("date","Month","ECB Assets")
+#Drop the monthly observations so we are left with quarterly
+BAL <- subset(BAL,
+              is.na(BAL$`ECB Assets`) == F)
 
-#ECB Balance
-BAL$DATE <- as.Date(BAL$DATE)
+#Make time like the others
+BAL$yqtr <- seq(from = 2020.5, to = 1999, by = -.25)
 
-#Getting the quarterly levels of each one, just the value every 3 months
-ECB <- matrix(rep(NA,560),nrow = 280, 2)
-for (i in 1:nrow(BAL)) {
-  if(i %% 3 == 1) {
-    num <- (i%/%3)+1
-    ECB[(num,2] <- BAL[i,2]
-  }
-}
+#drop not needed columns
+BAL <- select(BAL, -Month, -date)
+BAL <-BAL[order(BAL$yqtr),]
+
+#Volatility index
+#Only care about the price
+VOL <- select(VOL, `ï..Date`, Price)
+rownames(VOL) <- NULL
+
+#Make time like the others
+VOL$ts <- seq(from = 2020.5, to = 2000, by = (2000 - 2020.5)/ (246-1))
+VOL <-VOL[order(VOL$ts),]
+
+VOL$t <- rep(1:3,246/3)
+VOL <- subset(VOL,
+              t == 1)
+#Make the yqtr 
+VOL$yqtr <- seq(from = 2000, to = 2020.25, by = .25)
+
+#select the columns i want and change the names
+VOL <- select(VOL, Price, yqtr)
+colnames(VOL) <- c("Volatility", "yqtr")
+
+MON <- merge.data.frame(BAL,VOL, ALL = TRUE)
+
+#Drop all the ones i don't need
+
+#rm(list = c("BAL","country","miss","miss1","RHO","NHO","sm","meas","meas1","CPI","QNA","names","count","useful","VOL","house","ind2015"))
+
+#Merge Monetary policy and the main one
+VAR1 <- merge.data.frame(BOI, MON, All = T)
