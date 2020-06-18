@@ -10,7 +10,7 @@ library(ggplot2)
 #Reading in two of the data sets
 QNA <- read.csv("Original data/Quarterly national accounts original.csv", na.strings=c("","NA"))
 CPI <- read.csv("Original data/OECD Prices original.csv", na.strings=c("","NA"))
-BOI <- read.csv("Original data/OECD OG Big Boi.csv", na.strings=c("","NA"))
+BOI <- read.csv("Original data/OECD Main Economic Indicators Original.csv", na.strings=c("","NA"))
 BIS <- read.csv("Original data/BIS Property Prices Nominal.csv", na.strings=c("","NA"))
 BAL <- read.csv("Original data/ECB Total assets - Internal Liquidity Management.csv", na.strings=c("","NA"), header = F, skip = 4)
 VOL <- read.csv("Original data/STOXX 50 Volatility VSTOXX EUR Historical Data.csv", na.strings=c("-","NA"))
@@ -267,8 +267,13 @@ for(i in unique(BOI$Country)) {
 library(plm)
 pboi <- pdata.frame(BOI, index = c("t","Country"))
 
+#Make Res investment  real
+BOI$`Residential Investment, Real` <- BOI$`Residential Investment, Nominal` /BOI$`GDP Deflator, s.a`
+
+#Make Nominal House Prices
+
 #Reorder the columns
-BOI <- BOI[,c(1,2,3,11,12,13,17,4,5,6,7,8,9,10,14,15,16)]
+BOI <- BOI[,c(1,2,3,11,12,13,17,4,5,6,7,8,9,10,14,15,16,18)]
 
 #Normalise everything so its in 100 = 2015
 ind2015 <- subset(BOI,
@@ -279,8 +284,9 @@ BOI2015[,8:ncol(BOI)] <- NA
 for(i in 1:nrow(BOI)) {
   country <- subset(ind2015,
                     Country == BOI2015[i,2])
-  BOI2015[i,8:16] <- (BOI[i,8:16]*100) / country[,8:16]
+  BOI2015[i,8:18] <- (BOI[i,8:18]*100) / country[,8:18]
 }
+
 
 #BIS Nominal small excel file
 BIS <- subset(BIS,
@@ -295,7 +301,7 @@ BIS$qtr  = as.numeric(str_sub(BIS$yearqtr, 8, 8))
 BIS$yqtr = BIS$year + (BIS$qtr-1) / 4
 
 miss <- subset(BIS,
-               year >= 1999 &
+               year >= 2000 &
                year <= 2018)
 miss <- subset(miss,
                is.na(miss$`BIS Nominal House Price`))
@@ -303,11 +309,19 @@ miss <- subset(miss,
 unique(miss$Country)
 #Missing Slovenia Estonia Greece Luxembourg Malta Portgual Slavak Republic Austria Latvia
 miss1 <- subset(BOI,
-                year >= 1999 &
-               year <= 2018)
+                year >= 2000 &
+                year <= 2018)
 miss1 <- subset(miss1,
                 is.na(miss1$`Nominal House Prices`))
 unique(miss1$Country)
+
+miss2 <- subset(BOI,
+                year >= 2000 &
+                year <= 2018)
+miss2 <- subset(miss2,
+                is.na(miss2$`Real House Prices`))
+unique(miss2$Country)
+
 
 #ECB Balance sheet
 #Give Column names
@@ -346,7 +360,10 @@ MON <- merge.data.frame(BAL,VOL, ALL = TRUE)
 
 #Drop all the ones i don't need
 
-#rm(list = c("BAL","country","miss","miss1","RHO","NHO","sm","meas","meas1","CPI","QNA","names","count","useful","VOL","house","ind2015"))
+rm(list = c("BAL","country","miss","miss1","RHO","NHO","sm","meas","meas1","CPI","QNA","names","count","useful","VOL","house","ind2015"))
 
 #Merge Monetary policy and the main one
-VAR1 <- merge.data.frame(BOI, MON, All = T)
+VAR2 <- merge.data.frame(BOI2015, MON, All = T)
+
+#Saving for orhter r things
+write.csv(VAR2, file = "Data/VAR2.csv")
