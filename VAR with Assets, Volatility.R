@@ -1,5 +1,6 @@
 #VAR with CB balance, volatility, real GDP, GDP Deflator, Real House Prices, Residential Investment
 rm(list = ls())
+setwd("~/Thesis")
 VAR2 <- read.csv("Data/VAR2.csv")
 library(urca)
 library(vars)
@@ -9,7 +10,7 @@ library(forecast)
 library(tidyverse)
 library(BVAR)
 library(plm)
-
+library(panelvar)
 #Year we are using
 sta <- 2008
 fin <- 2019 
@@ -71,15 +72,27 @@ def$ldef <- log(def$GDP.Deflator..s.a)
 res$lres <- log(res$Residential.Investment..Real)
 ass$lass <- log(ass$ECB.Assets)
 
-#Don't need this went a different way
 
 #Drop the not logged variables
-#lgdp <- select(gdp, -Real.GDP..s.a)
-#lhou <- select(hou, -Real.House.Prices)
-#ldef <- select(def, -GDP.Deflator..s.a)
-#lres <- select(res, -Residential.Investment..Real)
-#lass <- select(ass, -ECB.Assets)
+lgdp <- select(gdp, -Real.GDP..s.a)
+lhou <- select(hou, -Real.House.Prices)
+ldef <- select(def, -GDP.Deflator..s.a)
+lres <- select(res, -Residential.Investment..Real)
+lass <- select(ass, -ECB.Assets)
+lvol <- select(vol, -Volatility)
 
+#Merge all the variables together
+pan <- merge(lgdp, lhou)
+pan <- merge(pan, lhou)
+pan <- merge(pan, ldef)
+pan <- merge(pan, lres)
+pan <- merge(pan, lvol)
+pan <- merge(pan, lass)
+ 
+
+
+
+#Don't need this
 
 #Make each country its own column
 #lgdp <- pivot_wider(lgdp, names_from = Country, values_from = lgdp)
@@ -137,6 +150,9 @@ for(i in countries) {
 }
 lagselect <- lagselect[-1]
 model1 <- lagselect
+model2 <- model1
+model3 <- model1 
+model4 <- model1
 
 
 #lagselect
@@ -154,3 +170,23 @@ for(i in 1:length(countries)) {
   model1[[countries[i]]] <- VAR(data[[countries[i]]], p = k, type = "const", season = NULL, exogen = NULL)
 }
 summary(model1[[1]])
+yup <- model1[[1]]
+unclass(yup$varresult)
+names(yup$varresult)
+names(yup[[1]][[1]])
+yup[[1]][[1]][[1]]
+#First gives the country, second index is varresults, third chooses the variable, fourth gives the coefficients
+
+model1[[1]][[1]][[1]][[1]]
+model1[[2]][[1]][[1]][[1]]
+(model1[[1]][[1]][[1]][[1]] + model1[[2]][[1]][[1]][[1]]) / 2
+#For every variable
+bvar()
+
+#Using the PVAR package
+#gmm.model1 <- pvargmm(dependent_vars = var_names, data = pan, lags = k, panel_identifier = c("Country", "yqtr"))
+
+#Using the BVAR package
+for(i in 1:length(countries)) {
+  model2[[countries[i]]] <- bvar(data = data[[countries[i]]], lags = k, bv_irf = c(identification = FALSE))
+}
