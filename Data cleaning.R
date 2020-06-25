@@ -178,7 +178,7 @@ unique(BOI$Measure)
 
 BOI <- subset(BOI,
               Subject != "Interest Rates > Other long term rates and yields > Housing > Mortgage rates" &
-                Subject != "Interest Rates > 3-month or 90-day rates and yields > Interbank rates > Total")
+              Subject != "Interest Rates > 3-month or 90-day rates and yields > Interbank rates > Total")
 
 
 meas1 <- c("Level, rate or national currency", "Level, rate or national currency, s.a.",
@@ -363,7 +363,7 @@ MON <- merge.data.frame(BAL,VOL, ALL = TRUE)
 rm(list = c("BAL","country","miss","miss1","RHO","NHO","sm","meas","meas1","CPI","QNA","names","count","useful","VOL","house","ind2015"))
 
 #Merge Monetary policy and the main one
-VAR2 <- merge.data.frame(BOI2015, MON, All = T)
+VAR2 <- merge.data.frame(BOI, MON, All = T)
 
 #Saving for orhter r things
 write.csv(VAR2, file = "Data/VAR2.csv")
