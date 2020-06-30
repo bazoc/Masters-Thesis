@@ -1,4 +1,4 @@
-#VAR with CB balance, volatility, real GDP, GDP Deflator, Real House Prices, Residential Investment
+#VAR with Shadow Policy Rate, real GDP, GDP Deflator, Real House Prices, Residential Investment
 rm(list = ls())
 setwd("~/Thesis")
 Cleaned.Data <- read.csv("Data/CleanedData.csv")
@@ -14,95 +14,109 @@ library(panelvar)
 library(coda)
 library(parallel)
 #Year we are using
-sta <- 2008
-fin <- 2019 
+sta <- 2000.5
+fin <- 2019.75
 
 #Set whether VAR is in log or levels terms
 ln = T
 
 #House prices go up to 2020, unconventional monetary policy starts at 2008
 Cleaned.Data <- subset(Cleaned.Data,
-                       year >= sta & year <= fin)
-#No residential investment for belgium
+                       yqtr >= sta & yqtr <= fin)
+
+rownames(Cleaned.Data) <- NULL
+
+miss <- subset(Cleaned.Data,
+               is.na(Cleaned.Data$Real.GDP..s.a))
+unique(miss$Country)
+#Real GDP there
+
+miss <- subset(Cleaned.Data,
+               is.na(Cleaned.Data$GDP.Deflator..s.a))
+unique(miss$Country)
+#Deflator there
+
+miss <- subset(Cleaned.Data,
+               is.na(Cleaned.Data$Residential.Investment..Real.s.a))
+unique(miss$Country)
+#No res investment for Belgium
+
+miss <- subset(Cleaned.Data,
+               is.na(Cleaned.Data$Real.GFCF..s.a))
+unique(miss$Country)
+#Capital Formation there
 
 miss <- subset(Cleaned.Data,
                is.na(Cleaned.Data$Real.House.Prices))
-#No Nominal house prices forlithuania latvia
+unique(miss$Country)
+#No Nominal house prices for lithuania, latvia, slovak R, luxembourg, Estonia, slovenia
+
+#Not all missing forever, can go back later and add them to start at different time periods, jsut dropping for now
 #No residential investment for belgium
+missing.countries <- c("Belgium", "Lithuania", "Latvia", "Slovak Republic", "Luxembourg", "Estonia", "Slovenia")
+
 Cleaned.Data <- subset(Cleaned.Data,
-                       Country != "Lithuania" & Country != "Latvia" & Country != "Belgium" )
-miss <- subset(Cleaned.Data,
-               is.na(Cleaned.Data))
-#Now no missing observations lets go
+                       !(Cleaned.Data$Country %in% missing.countries))
 
 
 #Make individual variable with columns for every country 
 gdp <- dplyr::select(Cleaned.Data,
-              Country,
-              yqtr,
-              `Real.GDP..s.a`)
+                     Country,
+                     yqtr,
+                     `Real.GDP..s.a`)
 
 hou <- dplyr::select(Cleaned.Data,
-              Country,
-              yqtr,
-              `Real.House.Prices`)
+                     Country,
+                     yqtr,
+                     `Real.House.Prices`)
 
 def <- dplyr::select(Cleaned.Data,
-              Country,
-              yqtr,
-              `GDP.Deflator..s.a`)
+                     Country,
+                     yqtr,
+                     `GDP.Deflator..s.a`)
 
 res <- dplyr::select(Cleaned.Data,
-              Country,
-              yqtr,
-              `Residential.Investment..Real.s.a`)
+                     Country,
+                     yqtr,
+                     `Residential.Investment..Real.s.a`)
 
-vol <- dplyr::select(Cleaned.Data,
-              Country,
-              yqtr,
-              `Volatility`)
+int <- dplyr::select(Cleaned.Data,
+                     Country,
+                     yqtr,
+                     `Shadow.Policy.Rate`)
 
-ass <- dplyr::select(Cleaned.Data,
-              Country,
-              yqtr,
-              `ECB.Assets`)
-
-#Rename Volatility for convenience
-vol$vol <- vol$Volatility
 
 #Want logs of most of these
 if(ln == T) {
-gdp$lgdp <- log(gdp$Real.GDP..s.a)
-hou$lhou <- log(hou$Real.House.Prices)
-def$ldef <- log(def$GDP.Deflator..s.a)
-res$lres <- log(res$Residential.Investment..Real.s.a)
-ass$lass <- log(ass$ECB.Assets)
+  gdp$lgdp <- log(gdp$Real.GDP..s.a)
+  hou$lhou <- log(hou$Real.House.Prices)
+  def$ldef <- log(def$GDP.Deflator..s.a)
+  res$lres <- log(res$Residential.Investment..Real.s.a)
 }
 if(ln == F) {
-gdp$lgdp <- (gdp$Real.GDP..s.a)
-hou$lhou <- (hou$Real.House.Prices)
-def$ldef <- (def$GDP.Deflator..s.a)
-res$lres <- (res$Residential.Investment..Real.s.a)
-ass$lass <- (ass$ECB.Assets)
+  gdp$lgdp <- (gdp$Real.GDP..s.a)
+  hou$lhou <- (hou$Real.House.Prices)
+  def$ldef <- (def$GDP.Deflator..s.a)
+  res$lres <- (res$Residential.Investment..Real.s.a)
 }
+
+#Give shadow rates better name
+int$int <- int$Shadow.Policy.Rate
 
 #Drop the not logged variables
 lgdp <- dplyr::select(gdp, -Real.GDP..s.a)
 lhou <- dplyr::select(hou, -Real.House.Prices)
 ldef <- dplyr::select(def, -GDP.Deflator..s.a)
-lres <- dplyr::select(res, -Residential.Investment..Real)
-lass <- dplyr::select(ass, -ECB.Assets)
-lvol <- dplyr::select(vol, -Volatility)
+lres <- dplyr::select(res, -Residential.Investment..Real.s.a)
+lint <- dplyr::select(int, -Shadow.Policy.Rate)
+
 
 #Merge all the variables together
 pan <- merge(lgdp, lhou)
 pan <- merge(pan, lhou)
 pan <- merge(pan, lres)
 pan <- merge(pan, ldef)
-pan <- merge(pan, lass)
-pan <- merge(pan, lvol)
-
-
+pan <- merge(pan, lint)
 
 
 #Don't need this
@@ -112,8 +126,8 @@ pan <- merge(pan, lvol)
 #lhou <- pivot_wider(lhou, names_from = Country, values_from = lhou)
 #ldef <- pivot_wider(ldef, names_from = Country, values_from = ldef)
 #lres <- pivot_wider(lres, names_from = Country, values_from = lres)
-#vol <- pivot_wider(vol, names_from = Country, values_from = Volatility)
-#lass <- pivot_wider(lass, names_from = Country, values_from = lass)
+#int <- pivot_wider(int, names_from = Country, values_from = Volatility)
+
 
 #Variable with all the country names
 countries <- unique(gdp$Country)
@@ -121,12 +135,12 @@ countries <- sort(countries)
 
 
 #Variable names
-var_names <- c("lgdp", "lhou", "ldef", "lres", "vol", "lass")
-var_names_fancy <- c("Log Real GDP ", "Log of Real House Prices","Log of GDP Deflator", "Log of Residential Investment", "Stock Market Volatility", "log of ECB Total Assets")
+var_names <- c("lgdp", "lhou", "lres", "ldef", "int")
+var_names_fancy <- c("Log Real GDP ", "Log of Real House Prices", "Log of Residential Investment", "Log of GDP Deflator", "Stock Market Volatility", "log of ECB Total Assets")
 #List with a list for all countries
 data <- list(NULL)
 for(i in countries) {
-  data[[i]] <- list(NULL,NULL,NULL,NULL,NULL,NULL)
+  data[[i]] <- list(NULL,NULL,NULL,NULL,NULL)
   names(data[[i]]) <- var_names
 }
 data <- data[-1]
@@ -135,10 +149,10 @@ data <- data[-1]
 for(i in 1:length(countries)) {
   v1 <- with(gdp, lgdp[`Country` == Country[i]])
   v2 <- with(hou, lhou[`Country` == Country[i]])
-  v3 <- with(def, ldef[`Country` == Country[i]])
-  v4 <- with(res, lres[`Country` == Country[i]])
-  v5 <- with(vol,  vol[`Country` == Country[i]])
-  v6 <- with(ass, lass[`Country` == Country[i]])
+  v3 <- with(res, lres[`Country` == Country[i]])
+  v4 <- with(def, ldef[`Country` == Country[i]])
+  v5 <- with(int, int[`Country` == Country[i]])
+
   
   #Making it a time series
   v1 <- ts(v1, start = sta, end = fin, frequency = 4)
@@ -146,15 +160,19 @@ for(i in 1:length(countries)) {
   v3 <- ts(v3, start = sta, end = fin, frequency = 4)
   v4 <- ts(v4, start = sta, end = fin, frequency = 4)
   v5 <- ts(v5, start = sta, end = fin, frequency = 4)
-  v6 <- ts(v6, start = sta, end = fin, frequency = 4)
   
   
   #Bind them all together
-  data[[countries[i]]] <- cbind(v1,v2,v3,v4,v5,v6, deparse.level = 0)
+  data[[countries[i]]] <- cbind(v1,v2,v3,v4,v5, deparse.level = 0)
   colnames(data[[countries[i]]]) <- var_names
   
 }
 
+temp1 <- filter(int, `Country` == "Austria")
+temp <- with(int, int[`Country` == "Austria"])
+colnames(data[["Austria"]])
+temp <- ts(temp, start = sta, end = fin, frequency = 4)
+data$Austria[,5]
 Aus <- data$Ireland
 
 Aus[1,]
@@ -167,7 +185,7 @@ library(foreign)
 write.csv(Aus, "mydata.csv")
 
 
-
+plot(Aus[,3])
 
 
 
@@ -187,9 +205,11 @@ model4 <- model1
 #lagselect
 lags <- NULL
 for(i in 1:length(countries)) {
-  lagselect[[countries[i]]] <- VARselect(data[[countries[i]]], lag.max = 10, type = "const")
+  lagselect[[countries[i]]] <- VARselect(data[[countries[i]]], lag.max = 8, type = "const")
   lags <- c(lags, lagselect[[countries[i]]][1])
 }
+#SQ and SC mostly around 1 or 2, we will go for 2
+#Got k = 2 from our thing
 
 k = 2
 
@@ -198,7 +218,23 @@ k = 2
 for(i in 1:length(countries)) {
   model1[[countries[i]]] <- VAR(data[[countries[i]]], p = k, type = "const", season = NULL, exogen = NULL)
 }
-summary(model1[[1]])
+summary(model1$Austria)
+
+#checking that all the roots are inside the unit circle
+roots <- NULL
+temp <- NULL
+for(i in 1:length(countries)) {
+  temp <- vars:::roots(model1[[countries[i]]])
+  roots <- c(roots, temp)
+}
+any(roots >= 1)
+#France has roots outside the unit circle
+
+ca.jo(data$France)
+
+unclass(model1$Austria)
+model1$Austria$varresult$lgdp$qr$
+vars:::roots(model1$Austria)
 yup <- model1[[1]]
 unclass(yup$varresult)
 names(yup$varresult)
