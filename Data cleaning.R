@@ -83,13 +83,13 @@ sum(is.na(econ$Value))
 #Works
 
 colnames(econ)
-econ <- select(econ, ï..LOCATION, Country, TIME, Value, var)
+econ <- dplyr::select(econ, ï..LOCATION, Country, TIME, Value, var)
 #Make it wider
 econ <- pivot_wider(econ,
                     names_from = var,
                     values_from = Value)
 
-econ <- arrange(econ, Country, TIME)
+econ <- arrange(econ, Country, Time)
 
 
 #Make a year and quarter variable
@@ -109,8 +109,8 @@ colnames(RHO) <- c("ï..LOCATION", "INDICATOR", "SUBJECT", "MEASURE", "FREQUENCY
 colnames(NHO) <- c("ï..LOCATION", "INDICATOR", "SUBJECT", "MEASURE", "FREQUENCY", "TIME", "Nominal House Prices", "Flag.Codes")
 
 #Only keep columns we car about
-RHO <- select(RHO, "ï..LOCATION", "TIME", "Real House Prices")
-NHO <- select(NHO, "ï..LOCATION", "TIME", "Nominal House Prices")
+RHO <- dplyr::select(RHO, "ï..LOCATION", "TIME", "Real House Prices")
+NHO <- dplyr::select(NHO, "ï..LOCATION", "TIME", "Nominal House Prices")
 
 #Merge them
 house <- merge.data.frame(RHO, NHO, all = T)
@@ -122,9 +122,9 @@ econ <- merge.data.frame(econ, house, all = T)
 
 #Probably gonna be between 2000 and 2018, check how many variables missing in this timeframe
 #count <- rep(NA, ncol(econ))
-#miss <- subset(econ,
-#               year >= 2000 & year <= 2018)
-#names <- colnames(miss)
+miss <- subset(econ,
+               year >= 2000 & year <= 2018)
+names <- colnames(miss)
 for(i in 1:ncol(miss)) {
   count[i] = sum(is.na(miss[[i]]))
 }
@@ -136,35 +136,35 @@ cbind(names,count)
 #CPI seasonally adjusted has to go
 #Gross fixed capital formation good
 #y <- subset(miss,
-#            is.na(miss$`Residential Investment, Nominal`))
-#y <- select(y, Country, TIME)
+#            is.na(miss$`Residential Investment, Nominal s,a`))
+#y <- dplyr::select(y, Country, TIME)
 
 
 #Residential investment is missing Belgium
-#Gonna drop all seasonals, probably for the best
+
 #CPI Housing missing alot of stuff
 #y <- subset(miss,
 #            is.na(miss$`CPI: Housing excluding imputed rentals for housing`))
-#y <- select(y, Country, TIME)
+#y <- dplyr::select(y, Country, TIME)
 #Definitely can't use this for housing
 
 #Other housing missing 228
 #y <- subset(miss,
 #            is.na(miss$`Real House Prices`))
-#y <- select(y, Country, TIME)
+#y <- dplyr::select(y, Country, TIME)
 #unique(y$Country)
 #Missing estonia lithuania luxembours latvia slovenia
 #Not major economies so really not the biggest deal
 #
 #y <- subset(miss,
 #is.na(miss$`Nominal House Prices`))
-#y <- select(y, Country, TIME)
+#y <- dplyr::select(y, Country, TIME)
 #unique(y$Country)
 #Same as the other one
 
 
 #The columns we are getting rid of
-#econ <- select(econ, -`CPI Imputed rentals for housing`, -`CPI: All items, s.a`, -`GFCF, Nominal s.a`, -`Residential Investment, Nominal s,a`, -`GDP, Nominal s.a`, -`CPI: Housing`, -`CPI: Housing excluding imputed rentals for housing`)
+#econ <- dplyr::select(econ, -`CPI Imputed rentals for housing`, -`CPI: All items, s.a`, -`GFCF, Nominal s.a`, -`Residential Investment, Nominal s,a`, -`GDP, Nominal s.a`, -`CPI: Housing`, -`CPI: Housing excluding imputed rentals for housing`)
 
 
 #Reading in the dataset from the Economic indicators database
@@ -225,7 +225,7 @@ sum(is.na(BOI$var))
 
 #Widen this shit
 colnames(BOI)
-BOI <- select(BOI, ï..LOCATION, Country, TIME, Value, var)
+BOI <- dplyr::select(BOI, ï..LOCATION, Country, TIME, Value, var)
 BOI <- pivot_wider(BOI,
                    names_from = var,
                    values_from = Value)
@@ -248,11 +248,11 @@ cbind(names,count)
 #More data in this one for whatever reason, bizarre stuff altogether
 
 #Get rid of CPI, s.a and CPI Imputed rentals for housing and Actual rentals, missing data and don't need for the time being
-BOI <- select(BOI, -`CPI, s.a`, -`CPI: Actual rentals for housing`, -`CPI: Imputed rentals for housing`)
+BOI <- dplyr::select(BOI, -`CPI, s.a`, -`CPI: Actual rentals for housing`, -`CPI: Imputed rentals for housing`)
 
 #Take the values out of the econ that I want
-useful <- select(econ,
-                 `ï..LOCATION`, `TIME`, `Country`, `Residential Investment, Nominal`, `Real House Prices`, `Nominal House Prices`)
+useful <- dplyr::select(econ,
+                 `ï..LOCATION`, `TIME`, `Country`, `Residential Investment, Nominal s,a`, `Real House Prices`, `Nominal House Prices`)
 #No res investment for belgium
 BOI <- merge.data.frame(BOI, useful, all = T)
 
@@ -268,7 +268,7 @@ library(plm)
 pboi <- pdata.frame(BOI, index = c("t","Country"))
 
 #Make Res investment  real
-BOI$`Residential Investment, Real` <- BOI$`Residential Investment, Nominal` /BOI$`GDP Deflator, s.a`
+BOI$`Residential Investment, Real s.a` <- BOI$`Residential Investment, Nominal s,a` /BOI$`GDP Deflator, s.a`
 
 #Make Nominal House Prices
 
@@ -292,7 +292,7 @@ for(i in 1:nrow(BOI)) {
 BIS <- subset(BIS,
               Reference.area %in% eurozone)
 rownames(BIS) <- NULL
-BIS <- select(BIS, -1, -2, -5, -6, -7, -8, -9)
+BIS <- dplyr::select(BIS, -1, -2, -5, -6, -7, -8, -9)
 BIS <- pivot_longer(BIS, 3:119)
 colnames(BIS) <- c("ï..LOCATION", "Country", "yearqtr","BIS Nominal House Price")
 
@@ -334,12 +334,12 @@ BAL <- subset(BAL,
 BAL$yqtr <- seq(from = 2020.5, to = 1999, by = -.25)
 
 #drop not needed columns
-BAL <- select(BAL, -Month, -date)
+BAL <- dplyr::select(BAL, -Month, -date)
 BAL <-BAL[order(BAL$yqtr),]
 
 #Volatility index
 #Only care about the price
-VOL <- select(VOL, `ï..Date`, Price)
+VOL <- dplyr::select(VOL, `ï..Date`, Price)
 rownames(VOL) <- NULL
 
 #Make time like the others
@@ -353,7 +353,7 @@ VOL <- subset(VOL,
 VOL$yqtr <- seq(from = 2000, to = 2020.25, by = .25)
 
 #select the columns i want and change the names
-VOL <- select(VOL, Price, yqtr)
+VOL <- dplyr::select(VOL, Price, yqtr)
 colnames(VOL) <- c("Volatility", "yqtr")
 
 MON <- merge.data.frame(BAL,VOL, ALL = TRUE)
