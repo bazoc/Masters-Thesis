@@ -1,7 +1,7 @@
 #VAR with CB balance, volatility, real GDP, GDP Deflator, Real House Prices, Residential Investment
 rm(list = ls())
 setwd("~/Thesis")
-VAR2 <- read.csv("Data/VAR2.csv")
+Cleaned.Data <- read.csv("Data/CleanedData.csv")
 library(urca)
 library(vars)
 library(mFilter)
@@ -17,49 +17,52 @@ library(parallel)
 sta <- 2008
 fin <- 2019 
 
+#Set whether VAR is in log or levels terms
+ln = T
+
 #House prices go up to 2020, unconventional monetary policy starts at 2008
-VAR2 <- subset(VAR2,
-               year >= sta & year <= fin)
+Cleaned.Data <- subset(Cleaned.Data,
+                       year >= sta & year <= fin)
 #No residential investment for belgium
 
-miss <- subset(VAR2,
-               is.na(VAR2$Real.House.Prices))
+miss <- subset(Cleaned.Data,
+               is.na(Cleaned.Data$Real.House.Prices))
 #No Nominal house prices forlithuania latvia
 #No residential investment for belgium
-VAR2 <- subset(VAR2,
-               Country != "Lithuania" & Country != "Latvia" & Country != "Belgium" )
-miss <- subset(VAR2,
-               is.na(VAR2))
+Cleaned.Data <- subset(Cleaned.Data,
+                       Country != "Lithuania" & Country != "Latvia" & Country != "Belgium" )
+miss <- subset(Cleaned.Data,
+               is.na(Cleaned.Data))
 #Now no missing observations lets go
 
 
 #Make individual variable with columns for every country 
-gdp <- dplyr::select(VAR2,
+gdp <- dplyr::select(Cleaned.Data,
               Country,
               yqtr,
               `Real.GDP..s.a`)
 
-hou <- dplyr::select(VAR2,
+hou <- dplyr::select(Cleaned.Data,
               Country,
               yqtr,
               `Real.House.Prices`)
 
-def <- dplyr::select(VAR2,
+def <- dplyr::select(Cleaned.Data,
               Country,
               yqtr,
               `GDP.Deflator..s.a`)
 
-res <- dplyr::select(VAR2,
+res <- dplyr::select(Cleaned.Data,
               Country,
               yqtr,
-              `Residential.Investment..Real`)
+              `Residential.Investment..Real.s.a`)
 
-vol <- dplyr::select(VAR2,
+vol <- dplyr::select(Cleaned.Data,
               Country,
               yqtr,
               `Volatility`)
 
-ass <- dplyr::select(VAR2,
+ass <- dplyr::select(Cleaned.Data,
               Country,
               yqtr,
               `ECB.Assets`)
@@ -68,29 +71,37 @@ ass <- dplyr::select(VAR2,
 vol$vol <- vol$Volatility
 
 #Want logs of most of these
+if(ln == T) {
 gdp$lgdp <- log(gdp$Real.GDP..s.a)
 hou$lhou <- log(hou$Real.House.Prices)
 def$ldef <- log(def$GDP.Deflator..s.a)
-res$lres <- log(res$Residential.Investment..Real)
+res$lres <- log(res$Residential.Investment..Real.s.a)
 ass$lass <- log(ass$ECB.Assets)
-
+}
+if(ln == F) {
+gdp$lgdp <- (gdp$Real.GDP..s.a)
+hou$lhou <- (hou$Real.House.Prices)
+def$ldef <- (def$GDP.Deflator..s.a)
+res$lres <- (res$Residential.Investment..Real.s.a)
+ass$lass <- (ass$ECB.Assets)
+}
 
 #Drop the not logged variables
-lgdp <- select(gdp, -Real.GDP..s.a)
-lhou <- select(hou, -Real.House.Prices)
-ldef <- select(def, -GDP.Deflator..s.a)
-lres <- select(res, -Residential.Investment..Real)
-lass <- select(ass, -ECB.Assets)
-lvol <- select(vol, -Volatility)
+lgdp <- dplyr::select(gdp, -Real.GDP..s.a)
+lhou <- dplyr::select(hou, -Real.House.Prices)
+ldef <- dplyr::select(def, -GDP.Deflator..s.a)
+lres <- dplyr::select(res, -Residential.Investment..Real)
+lass <- dplyr::select(ass, -ECB.Assets)
+lvol <- dplyr::select(vol, -Volatility)
 
 #Merge all the variables together
 pan <- merge(lgdp, lhou)
 pan <- merge(pan, lhou)
-pan <- merge(pan, ldef)
 pan <- merge(pan, lres)
-pan <- merge(pan, lvol)
+pan <- merge(pan, ldef)
 pan <- merge(pan, lass)
- 
+pan <- merge(pan, lvol)
+
 
 
 
@@ -111,7 +122,7 @@ countries <- sort(countries)
 
 #Variable names
 var_names <- c("lgdp", "lhou", "ldef", "lres", "vol", "lass")
-
+var_names_fancy <- c("Log Real GDP ", "Log of Real House Prices","Log of GDP Deflator", "Log of Residential Investment", "Stock Market Volatility", "log of ECB Total Assets")
 #List with a list for all countries
 data <- list(NULL)
 for(i in countries) {
@@ -143,6 +154,24 @@ for(i in 1:length(countries)) {
   colnames(data[[countries[i]]]) <- var_names
   
 }
+
+
+
+Aus <- data$Ireland
+
+Aus[1,]
+
+lagselectaus <- VARselect(Aus, lag.max = 9, type = "const")
+lagselectaus
+
+
+library(foreign)
+write.csv(Aus, "mydata.csv")
+
+
+
+
+
 
 
 #Generic object to store results by country

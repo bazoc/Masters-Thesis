@@ -13,7 +13,8 @@ CPI <- read.csv("Original data/OECD Prices original.csv", na.strings=c("","NA"))
 BOI <- read.csv("Original data/OECD Main Economic Indicators Original.csv", na.strings=c("","NA"))
 BIS <- read.csv("Original data/BIS Property Prices Nominal.csv", na.strings=c("","NA"))
 BAL <- read.csv("Original data/ECB Total assets - Internal Liquidity Management.csv", na.strings=c("","NA"), header = F, skip = 4)
-VOL <- read.csv("Original data/STOXX 50 Volatility VSTOXX EUR Historical Data.csv", na.strings=c("-","NA"))
+VOL <- read.csv("Original data/Bloomberg VSTOXX index.csv", na.strings=c("-","NA"), header = T)
+SRT <- read.csv("Original data/Bloomberg Shadow policy rate Original.csv")
 
 #Variable with eurozone countries
 eurozone <- c("Austria","Belgium","Cyprus","Estonia","Finland","France","Germany","Greece","Ireland","Italy","Latvia","Lithuania","Luxembourg","Malta","Netherlands","Portugal","Slovak Republic","Slovenia","Spain")
@@ -339,31 +340,29 @@ BAL <-BAL[order(BAL$yqtr),]
 
 #Volatility index
 #Only care about the price
-VOL <- dplyr::select(VOL, `ï..Date`, Price)
 rownames(VOL) <- NULL
 
-#Make time like the others
-VOL$ts <- seq(from = 2020.5, to = 2000, by = (2000 - 2020.5)/ (246-1))
-VOL <-VOL[order(VOL$ts),]
 
-VOL$t <- rep(1:3,246/3)
-VOL <- subset(VOL,
-              t == 1)
 #Make the yqtr 
-VOL$yqtr <- seq(from = 2000, to = 2020.25, by = .25)
+VOL$yqtr <- seq(from = 1999.75, to = 2020.25, by = .25)
 
 #select the columns i want and change the names
-VOL <- dplyr::select(VOL, Price, yqtr)
+VOL <- dplyr::select(VOL, VSTOXX.Index, yqtr)
 colnames(VOL) <- c("Volatility", "yqtr")
 
 MON <- merge.data.frame(BAL,VOL, ALL = TRUE)
 
+#Add the Shadow rates
+SRT$yqtr <-  seq(from = 2000.5, to = 2020.25, by = .25)
+
 #Drop all the ones i don't need
 
+#Merge them
+MON <- merge.data.frame(MON,SRT, ALL = TRUE)
 rm(list = c("BAL","country","miss","miss1","RHO","NHO","sm","meas","meas1","CPI","QNA","names","count","useful","VOL","house","ind2015"))
 
 #Merge Monetary policy and the main one
-VAR2 <- merge.data.frame(BOI, MON, All = T)
+Cleaned.Data <- merge.data.frame(BOI, MON, All = T)
 
 #Saving for orhter r things
-write.csv(VAR2, file = "Data/VAR2.csv")
+write.csv(Cleaned.Data, file = "Data/CleanedData.csv")
