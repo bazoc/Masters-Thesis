@@ -271,8 +271,6 @@ pboi <- pdata.frame(BOI, index = c("t","Country"))
 #Make Res investment  real
 BOI$`Residential Investment, Real s.a` <- BOI$`Residential Investment, Nominal s,a` /BOI$`GDP Deflator, s.a`
 
-#Make Nominal House Prices
-
 #Reorder the columns
 BOI <- BOI[,c(1,2,3,11,12,13,17,4,5,6,7,8,9,10,14,15,16,18)]
 
