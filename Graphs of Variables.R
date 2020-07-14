@@ -13,7 +13,9 @@ for(i in 1:ncol(data[[1]])) {
   plot(data[[countries[1]]][,i],
        ylab = var_names_fancy[i])
 }
-plot(Aus[,4])
+plot.ts(Aus)
+plot(Cleaned.Data$Shadow.Policy.Rate)
+plot(Aus[,2])
 data[[1]]
 colnames(Aus[,1])
 data[[countries[1]]

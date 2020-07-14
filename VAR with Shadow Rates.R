@@ -23,7 +23,7 @@ ln = T
 #House prices go up to 2020, unconventional monetary policy starts at 2008
 Cleaned.Data <- subset(Cleaned.Data,
                        yqtr >= sta & yqtr <= fin)
-
+Cleaned.Data <- dplyr::select(Cleaned.Data, - X)
 rownames(Cleaned.Data) <- NULL
 
 miss <- subset(Cleaned.Data,
@@ -57,7 +57,25 @@ missing.countries <- c("Belgium", "Lithuania", "Latvia", "Slovak Republic", "Lux
 
 Cleaned.Data <- subset(Cleaned.Data,
                        !(Cleaned.Data$Country %in% missing.countries))
+unique(Cleaned.Data$Country)
+econnames <- colnames(Cleaned.Data)
+Cleaned.Data$crashdum <- 0
+#Make a dummy variable for  year and qtr 2007-2009
+for(i in 1:nrow(Cleaned.Data)) {
+  if(Cleaned.Data$year[i] %in% 2007:2009) {
+    Cleaned.Data$crashdum[i] <- 1
+  }
+}
 
+experiment <- pivot_wider(Cleaned.Data,names_from = yqtr, values_from = crashdum)
+
+#Have to fix this if you add more columns or dates!!!!!!!!!!
+experiment[is.na(experiment)] <- 0
+experiment <- experiment[,48:59]
+Cleaned.Data <- cbind(Cleaned.Data, experiment)
+
+#Number of proper variables
+num_var <- 1:5
 
 #Make individual variable with columns for every country 
 gdp <- dplyr::select(Cleaned.Data,
@@ -134,9 +152,15 @@ countries <- unique(gdp$Country)
 countries <- sort(countries)
 
 
+
 #Variable names
-var_names <- c("lgdp", "lhou", "lres", "ldef", "int")
+crashyrs <- as.character(seq(from = 2007, to = 2009.75, by = .25))
+var_names<- c("lgdp", "lhou", "lres", "ldef", "int")
+var_names_full <- c(var_names, crashyrs)
 var_names_fancy <- c("Log Real GDP ", "Log of Real House Prices", "Log of Residential Investment", "Log of GDP Deflator", "Stock Market Volatility", "log of ECB Total Assets")
+
+
+
 #List with a list for all countries
 data <- list(NULL)
 for(i in countries) {
@@ -144,6 +168,7 @@ for(i in countries) {
   names(data[[i]]) <- var_names
 }
 data <- data[-1]
+
 
 #Making a list with each country as its own dataframe
 for(i in 1:length(countries)) {
@@ -161,10 +186,24 @@ for(i in 1:length(countries)) {
   v4 <- ts(v4, start = sta, end = fin, frequency = 4)
   v5 <- ts(v5, start = sta, end = fin, frequency = 4)
   
+  #Dummy Variables for years
+  v6 <- with(Cleaned.Data, `2007`[`Country` == Country[i]])
+  v7 <- with(Cleaned.Data, `2007.25`[`Country` == Country[i]])
+  v8 <- with(Cleaned.Data, `2007.5`[`Country` == Country[i]])
+  v9 <- with(Cleaned.Data, `2007.75`[`Country` == Country[i]])
+  v10<- with(Cleaned.Data, `2008`[`Country` == Country[i]])
+  v11<- with(Cleaned.Data, `2008.25`[`Country` == Country[i]])
+  v12<- with(Cleaned.Data, `2008.5`[`Country` == Country[i]])
+  v13<- with(Cleaned.Data, `2008.75`[`Country` == Country[i]])
+  v14<- with(Cleaned.Data, `2009`[`Country` == Country[i]])
+  v15<- with(Cleaned.Data, `2009.25`[`Country` == Country[i]])
+  v16<- with(Cleaned.Data, `2009.5`[`Country` == Country[i]])
+  v17<- with(Cleaned.Data, `2009.75`[`Country` == Country[i]])
+
   
   #Bind them all together
-  data[[countries[i]]] <- cbind(v1,v2,v3,v4,v5, deparse.level = 0)
-  colnames(data[[countries[i]]]) <- var_names
+  data[[countries[i]]] <- cbind(v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,v14,v15,v16,v17, deparse.level = 0)
+  colnames(data[[countries[i]]]) <- var_names_full
   
 }
 
@@ -176,17 +215,19 @@ data$Austria[,5]
 Aus <- data$Ireland
 
 Aus[1,]
+Aus$lgdp
+colnames(Aus)
+lagselectaus <- VARselect(Aus[,num_var], lag.max = 9, type = "const")
 
-lagselectaus <- VARselect(Aus, lag.max = 9, type = "const")
-lagselectaus
+colnames(Aus[,16])
 
 
 library(foreign)
 write.csv(Aus, "mydata.csv")
 
 
-plot(Aus[,3])
-
+plot(Aus[,5])
+colnames(Aus)
 
 
 
@@ -197,28 +238,41 @@ for(i in countries) {
 }
 lagselect <- lagselect[-1]
 model1 <- lagselect
+coint  <- model1
 model2 <- model1
 model3 <- model1 
 model4 <- model1
 
 
+
 #lagselect
 lags <- NULL
 for(i in 1:length(countries)) {
-  lagselect[[countries[i]]] <- VARselect(data[[countries[i]]], lag.max = 8, type = "const")
+  lagselect[[countries[i]]] <- VARselect(data[[countries[i]]][,num_var], lag.max = 9, type = "const")
   lags <- c(lags, lagselect[[countries[i]]][1])
 }
+lags
 #SQ and SC mostly around 1 or 2, we will go for 2
-#Got k = 2 from our thing
 
-k = 2
-
-
+laglen = 2
+ahead = 40
+irevar <- VAR(Aus[,num_var], p = laglen, type = "const", season = NULL, exogen = Aus[,6:17])
+summary(irevar)
+iregrange <- bazgrangertest(Aus[,num_var], p = laglen, cause = c("lgdp", "int"), type = "const", season = NULL, exogen = Aus[,6:17])
+summary(iregrange)
+SVARire <- SVAR(irevar, Amat = amat, Bmat = NULL)
+irfire1 <- vars:::irf(SVARire, n.ahead = ahead, impulse = "int", response = c("lgdp", "lhou"), boot = T, runs = 1000, ci = .95)
+plot(irfire1)
+irfire2 <- vars:::irf(irevar, n.ahead = ahead, impulse = "int", response = c("lgdp", "lhou"), boot = T, runs = 1000, ci = .95)
+plot(irfire2)
+sumire <- summary(irevar)
+t(chol(sumire$covres))
+sumire2 <- summary(SVARire)
 #The actual VAR
 for(i in 1:length(countries)) {
-  model1[[countries[i]]] <- VAR(data[[countries[i]]], p = k, type = "const", season = NULL, exogen = NULL)
+  model1[[countries[i]]] <- VAR(data[[countries[i]]][,num_var], p = laglen, type = "const", season = NULL, exogen = NULL)
 }
-summary(model1$Austria)
+summary(model1$Ireland)
 
 #checking that all the roots are inside the unit circle
 roots <- NULL
@@ -230,54 +284,43 @@ for(i in 1:length(countries)) {
 any(roots >= 1)
 #France has roots outside the unit circle
 
-ca.jo(data$France)
+#Cointegration
+#cointire <- ca.jo(data$Ireland, type = "trace", ecdet = "const", K = laglen)
+#cointire@teststat
+#cointire@cval
+#cointindex <- NULL
+#Cointegration test for all the variables, trace statistic, this will break if more variables are added
+#for(i in 1:length(countries)) {
+#  coint[[countries[i]]] <- ca.jo(data[[countries[i]]], type = "trace", ecdet = "const", K = laglen)
+#  #Check each in descending order
+#  for(j in length(var_names)) {
+#    if(coint[[countries[i]]]@cvaL[j,2] < coint[[countries[i]]]@teststat[j]) {
+#      cointindex[countries[i]] <- length(var_names) - j
+#      break
+#    }
+#  }
+#}
 
-unclass(model1$Austria)
-model1$Austria$varresult$lgdp$qr$
-vars:::roots(model1$Austria)
-yup <- model1[[1]]
-unclass(yup$varresult)
-names(yup$varresult)
-names(yup[[1]][[1]])
-yup[[1]][[1]][[1]]
-#First gives the country, second index is varresults, third chooses the variable, fourth gives the coefficients
+#Breusch Godfrey test for serially correlated errors
+serialire <- serial.test(model1$Ireland, lags.bg = 3, type = "BG")
+serialire
+#There is serial correlation
 
-model1[[1]][[1]][[1]][[1]]
-model1[[2]][[1]][[1]][[1]]
-(model1[[1]][[1]][[1]][[1]] + model1[[2]][[1]][[1]][[1]]) / 2
-#For every variable
-bvar()
+#Choleski decomposition
+#Set up the structural matrix
+amat <- diag(5)
+amat[2:5,1] <- NA
+amat[3:5,2] <- NA
+amat[4:5,3] <- NA
+amat[5,4]   <- NA
+amat
 
-#Using the PVAR package
-#gmm.model1 <- pvargmm(dependent_vars = var_names, data = pan, lags = k, panel_identifier = c("Country", "yqtr"))
 
-#Using the BVAR package
-for(i in 1:length(countries)) {
-  model2[[countries[i]]] <- bvar(data = data[[countries[i]]], lags = k, bv_irf = c(identification = FALSE))
-}
-names(model2$Austria$beta)
-model2$Austria$variables
+ahead <- 40
+irfire <- vars:::irf(model1$Ireland, n.ahead = ahead, impulse = "int", response = c("lgdp", "lhou"), boot = T, runs = 1000, ci = .95)
+plot(irfire)
 
-summary(model2$Austria)
-apply(model2$Austria$beta, FUN = mean, MARGIN = 2)
-plot(model2$Austria)
-plot(model2$Austria, type = "dens", vars_response = "lgdp", vars_impulse = "lgdp-lag1")
 
-#Make it a coda object
-austria_mcmc <- as.mcmc(model2$Austria)
-
-#Multiple chains
-n_cores <- 2
-cl <- makeCluster(n_cores)
-
-#Run the model
-for(i in 1:length(countries)) {
-  model2[[countries[i]]] <- par_bvar(cl = cl, data = data[[countries[i]]], lags = k, bv_irf = c(identification = FALSE))
-}
-yup <- par_bvar(cl = cl, data = data$Austria, lags = k, n_draw = 60000, n_burn = 10000, n_thin = 20)
-stopCluster(cl)
-#Make it a coda object
-austria_mcmc <- as.mcmc(yup)
-gelman.plot(austria_mcmc)
-effectiveSize(austria_mcmc)
-acf(austria_mcmc$x)
+fevdire <- vars:::fevd(model1$Ireland, n.ahead = ahead)
+plot(y = fevdire$lgdp[,1], ))
+fevdire$lgdp
