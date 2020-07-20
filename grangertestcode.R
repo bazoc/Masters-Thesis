@@ -2,12 +2,6 @@ bazgrangertest <- function (y, p = 1, type = c("const", "trend", "both",
                                                "none"), season = NULL, exogen = NULL, cause = NULL, lag.max = NULL, 
                             ic = c("AIC", "HQ", "SC", "FPE")) 
 {
-  y = Aus[,num_var] 
-  p = laglen
-  type = "const"
-  season = NULL
-  exogen = Aus[,6:17]
-  cause = c("lgdp", "int")
   y <- as.matrix(y)
   if (any(is.na(y))) 
     stop("\nNAs in y.\n")
@@ -131,7 +125,6 @@ bazgrangertest <- function (y, p = 1, type = c("const", "trend", "both",
   class(grantest) <- "grantest"
   return(grantest)
 }
-
 summary.grantest <- function(x) {
   causnames <- names(x)
   effectnames <- names(x[[1]])
@@ -150,12 +143,14 @@ summary.grantest <- function(x) {
       n = i*2
       Fvalue <- x[[causnames[j]]][[effectnames[i]]][["F"]][[2]]
       Pvalue <- x[[causnames[j]]][[effectnames[i]]][["Pr(>F)"]][[2]]
+      Pvalue <- round(Pvalue, digits = 4)
       critstat[j,n-1] <- Fvalue
       critstat[j,n] <- Pvalue
     }
   }
   for(i in 1:E) {
-    critstattot[[effectnames[i]]] <- critstat[,c(E,E+1)]
+    n <- i*2
+    critstattot[[effectnames[i]]] <- critstat[,c(n,n-1)]
   }
   grangersummary <- critstattot
   return(grangersummary)

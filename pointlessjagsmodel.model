@@ -1,0 +1,43 @@
+model {
+  for(i in 1:N) {
+    lgdp[i] ~ dnorm(mu1[i],tau1)
+    mu[i] = alpha10*const[i] + beta11*lgdp.l1[i] + beta12*lhou.l1[i] + beta13*lres.l1[i] + beta14*ldef.l1[i] + beta15*int.l1[i] +beta16*lgdp.l2[i] + beta17*lhou.l2[i] + beta18*lres.l2[i] + beta19*ldef.l2[i] + beta10*int.l2[i]
+  }
+    for(i in 1:N) {
+    lhou[i] ~ dnorm(mu2[i],tau2)
+    mu2[i] = alpha20*const[i] + beta22*lgdp.l1[i] + beta22*lhou.l1[i] + beta23*lres.l1[i] + beta24*ldef.l1[i] + beta25*int.l1[i] +beta26*lgdp.l2[i] + beta27*lhou.l2[i] + beta28*lres.l2[i] + beta29*ldef.l2[i] + beta20*int.l2[i]
+  }
+
+  alpha10~ dunif(-100,100)
+  alpha20~ dunif(-100,100)
+
+
+  beta11 ~ dunif(-100,100)
+  beta12 ~ dunif(-100,100)
+  beta13 ~ dunif(-100,100)
+  beta14 ~ dunif(-100,100)
+  beta15 ~ dunif(-100,100)
+  beta16 ~ dunif(-100,100)
+  beta17 ~ dunif(-100,100)
+  beta18 ~ dunif(-100,100)
+  beta19 ~ dunif(-100,100)
+  beta10 ~ dunif(-100,100)
+  
+  beta21 ~ dunif(-100,100)
+  beta22 ~ dunif(-100,100)
+  beta23 ~ dunif(-100,100)
+  beta24 ~ dunif(-100,100)
+  beta25 ~ dunif(-100,100)
+  beta26 ~ dunif(-100,100)
+  beta27 ~ dunif(-100,100)
+  beta28 ~ dunif(-100,100)
+  beta29 ~ dunif(-100,100)
+  beta20 ~ dunif(-100,100)
+
+  
+  
+  tau1 ~ dgamma(0.001,0.001)
+  tau2 ~ dgamma(0.001,0.001
+  phi1 = 1/tau1
+  phi2 = 1/tau2
+}
