@@ -82,6 +82,7 @@ experiment[is.na(experiment)] <- 0
 experiment <- experiment[,48:59]
 Cleaned.Data <- cbind(Cleaned.Data, experiment)
 
+
 #Number of proper variables
 num_var <- 1:5
 
@@ -143,9 +144,9 @@ pan <- merge(pan, lhou)
 pan <- merge(pan, lres)
 pan <- merge(pan, ldef)
 pan <- merge(pan, lint)
-
-
-
+pan <- pan[,c(1,2,4,3,5,6,7)]
+panel <- pan
+pan <- filter(pan, Country == "Austria" | Country == "France")
 
 #Variable with all the country names
 countries <- unique(gdp$Country)
@@ -159,11 +160,9 @@ var_names<- c("lgdp", "lhou", "lres", "ldef", "int")
 var_names_full <- c(var_names, crashyrs)
 var_names_fancy <- c("Log Real GDP ", "Log of Real House Prices", "Log of Residential Investment", "Log of GDP Deflator", "Stock Market Volatility", "log of ECB Total Assets")
 
-#Number of dummy variables
-dumvars <- 6:ncol(data$Austria)
 
 
-#List with a list for all countries
+#A list for all countries
 data <- list()
 
 #Making a list with each country as its own dataframe
@@ -212,16 +211,19 @@ temp <- ts(temp, start = sta, end = fin, frequency = 4)
 data$Austria[,5]
 Aus <- data$Estonia
 
-Aus[1,]
-Aus$lgdp
-colnames(Aus)
+
 lagselectaus <- VARselect(Aus[,num_var], lag.max = 9, type = "const")
 
 colnames(Aus[,16])
 
-
+pan$id <- NA
 library(foreign)
-write.csv(Aus, "mydata.csv")
+for(i in 1:nrow(pan)) {
+  country <- pan$Country[i]
+  pan$id[i] <- which(countries == country)
+}
+pan$yqtr <- pan$yqtr*4
+write.csv(pan, "mydata.csv")
 
 
 plot(Aus[,5])
@@ -363,13 +365,3 @@ roots >= 1
 #    }
 #  }
 #}
-
-#Breusch Godfrey test for serially correlated errors
-serialire <- serial.test(model1$Ireland, lags.bg = 3, type = "BG")
-serialire
-#There is sesthzdhhrial correlation
-
-plot(irevar)
-fevdire <- vars:::fevd(model1$Ireland, n.ahead = ahead)
-plot(fevdire)
-fevdire$lgdp
