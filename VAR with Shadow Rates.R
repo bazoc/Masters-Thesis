@@ -147,7 +147,8 @@ pan <- merge(pan, lint)
 pan <- pan[,c(1,2,4,3,5,6,7)]
 panel <- pan
 pan <- filter(pan, Country == "Austria" | Country == "France")
-
+tox <- pan$lgdp
+which(tox == 4.413538)
 #Variable with all the country names
 countries <- unique(gdp$Country)
 countries <- sort(countries)
@@ -225,7 +226,19 @@ for(i in 1:nrow(pan)) {
 pan$yqtr <- pan$yqtr*4
 write.csv(pan, "mydata.csv")
 
-
+temp <- NULL
+temp1 <- list()
+temp2 <- list()
+for(i in 1:10) {
+  temp1[[countries[i]]] <- with(pan, `lhou`[`Country` == countries[i]])
+  meany <- mean(temp1[[countries[i]]])
+  temp2[[countries[i]]] <- temp1[[countries[i]]] - meany
+  temp <- c(temp, temp2[[countries[i]]])
+}
+which(temp == .0902)
+all((temp[3:38] == fevar$datamat[1:36,2]))
+temp2
+pan$Country
 plot(Aus[,5])
 colnames(Aus)
 
@@ -285,7 +298,7 @@ temp <- data[[countries[2]]]
 for(i in 1:length(countries)) {
   model2[[countries[i]]] <- SVAR(model1[[countries[i]]], Amat = amat, Bmat = NULL)
 }
-
+ire <- data$Austria
 #Drop France because roots outside the unit circle
 model1$France <- NULL
 model2$France <- NULL
