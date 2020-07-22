@@ -1,16 +1,7 @@
-#y = panel
-#p = 2
-#type = "const"
-#season = NULL
-#exogen = NULL
-#lag.max = NULL
-#ic = c("AIC", "HQ", "SC", "FPE")
-#panel_identifier = c(1,2)
-
-
-bazfevar <- function (y, p = 1, type = c("const", "trend", "both", 
-                             "none"), season = NULL, exogen = NULL, lag.max = NULL, 
-          ic = c("AIC", "HQ", "SC", "FPE"), panel_identifier = c(1,2), allreadydemeaned = F) 
+#Just took the demeaned out of the name and added the fancy names to panel
+bazfevarfancy <- function (y, p = 1, type = c("const", "trend", "both", 
+                                         "none"), season = NULL, exogen = NULL, lag.max = NULL, 
+                      ic = c("AIC", "HQ", "SC", "FPE"), panel_identifier = c(1,2), allreadydemeaned = F) 
 {
   call <- match.call()
   
@@ -23,17 +14,17 @@ bazfevar <- function (y, p = 1, type = c("const", "trend", "both",
     if (is.null(colnames(y))) {
       colnames(y) <- paste("y", 1:ncol(y), sep = "")
       warning(paste("No column names supplied in y, using:", 
-                  paste(colnames(y), collapse = ", "), ", instead.\n"))
+                    paste(colnames(y), collapse = ", "), ", instead.\n"))
     }
     colnames(y) <- make.names(colnames(y))
     y.orig <- y
     type <- match.arg(type)
-  
+    
     #Demean the y
-  
+    
     var.name <- colnames(y)[-panel_identifier]
     demy <- matrix(NA, ncol = ncol(y)-2, nrow = nrow(y))
-    colnames(demy) <- paste0("demeaned_", var.name)
+    colnames(demy) <-(var.name)
     ydata <- y[,-panel_identifier]
     ydata <- as.matrix(ydata)
     countries <- unique(y[,panel_identifier[1]])
@@ -53,7 +44,7 @@ bazfevar <- function (y, p = 1, type = c("const", "trend", "both",
       ycont[[countries[i]]] <- demy[y.min:y.max,]
     }
     tot.obs <- dim(demy)[1]
-  
+    
     
     K <- dim(demy)[2]
     if (!is.null(lag.max)) {
@@ -80,11 +71,11 @@ bazfevar <- function (y, p = 1, type = c("const", "trend", "both",
     temp1 <- NULL
     temp <- NULL
     for (i in 1:p) {
-    temp <- paste(colnames(demy), ".l", i, sep = "")
-    temp1 <- c(temp1, temp)
+      temp <- paste(colnames(demy), ".l", i, sep = "")
+      temp1 <- c(temp1, temp)
     }
     colnames(ylags) <- temp1
-  
+    
     if (type == "const") {
       rhs <- cbind(ylags, rep(1, tot.sample))
       colnames(rhs) <- c(colnames(ylags), "const")
@@ -238,109 +229,12 @@ bazfevar <- function (y, p = 1, type = c("const", "trend", "both",
                                                                     rhs)), y = y.orig, type = type, p = p, K = K, obs = sample, 
                    totobs = sample + p, restrictions = NULL, call = call)
     class(result) <- "varest"
-
-  }
-  
-  return(result)
-}
-  
-fevar <- bazfevar(panel, p = laglen, type = "const")
-#summary(fevar)
-#irf(fevar)
-
-#object = fevar
-#cause = c("demeaned_lgdp", "demeaned_lhou")
-bazgrangertest <- function (object, cause = NULL) 
-{
-  if(class(object) == "varest") 1
- 
-  else if(class(object) != "svar")
-    stop("\nFix this function so it works with SVAR")
-  type <- object$type
-  K <- object$K
-  p = object$p
-  datamat <- object$datamat[,-c(1:K)]
-  yend <- object$yend
-  mainequation <- object$varresult
-  call <- match.call()
-  allequations <- list()
-  allequations <- list("main" = mainequation)
-  if(is.null(cause)) {
-    grangenames <- colnames(object$y)
-    M <- K
-  }
-  if(!is.null(cause)) {
-    grangenames <- cause
-    M <- length(cause)
-  }
-  totnames <- colnames(object$y)
-  grantest <- list()
-  for(j in 1:M) {
-    causalvar <- grangenames[j]
-    g <- which(gsub("\\.l[[:digit:]]", "", colnames(datamat)) %in% 
-                 causalvar)
     
-    datamatcur <- datamat[,-g]
-    equation <- list()
-    for (i in 1:K) {
-      y <- yend[, i]
-      equation[[colnames(yend)[i]]] <- lm(y ~ -1 + ., data = datamatcur)
-      if (any(c("const", "both") %in% type)) {
-        attr(equation[[colnames(yend)[i]]]$terms, "intercept") <- 1
-      }
-    }
-    allequations[causalvar] <- list(equation)
-    temptest <- list()
-    for(i in 1:K)  {
-      XY <- allequations[[causalvar]][[totnames[i]]]
-      YX <- mainequation[[totnames[i]]]
-      temptest[[totnames[i]]] <- anova(XY, YX)
-    }
-    grantest[[causalvar]] <- temptest
   }
-  result <- list(grantest = grantest, causalvars = grangenames)
-  class(result) <- "grantest"
-  return(result)
-}
-#grangerdanger <- bazgrangertest(fevar, cause = c("demeaned_lgdp", "demeaned_lhou"))
-#class(fevar)
-#x = grangerdanger
-summary.grantest <- function(x) {
   
-  causnames <- x$causalvars
-  effectnames <- names(x[[1]][[1]])
-  E <- length(effectnames)
-  C <- length(causnames)
-  temp <- character()
-  for(i in 1:E) {
-    temp <- c(temp,"F Value", "P Value")
-  }
-  temp1 <- paste(effectnames, temp, sep = " ")
-  
-  critstattot <- list()
-  critstat <- matrix(NA, nrow = C, ncol = E*2)
-  colnames(critstat) <- temp
-  rownames(critstat) <- causnames
-  for(j in 1:C) {
-    for(i in 1:E) {
-      n = i*2
-      Fvalue <- x[[1]][[causnames[j]]][[effectnames[i]]][["F"]][[2]]
-      Pvalue <- x[[1]][[causnames[j]]][[effectnames[i]]][["Pr(>F)"]][[2]]
-      Pvalue <- round(Pvalue, digits = 4)
-      critstat[j,n-1] <- Fvalue
-      critstat[j,n] <- Pvalue
-    }
-  }
-  forexcel <- critstat
-  colnames(forexcel) <- temp1
-  for(i in 1:E) {
-    n <- i*2
-    critstattot[[effectnames[i]]] <- critstat[,c(n,n-1)]
-  }
-  howtoread = "Do rows granger cause columns?"
-  grangersummary <- critstattot
-  result <- list(grangersummary = grangersummary, causalvars = causnames, howtoread = howtoread, forexcel = forexcel)
   return(result)
 }
 
-#summary(grangerdanger)
+fancypanel <- panel
+colnames(fancypanel) <- c("Country", "yqtr", var_names_fancy)
+fancyfevar <- bazfevarfancy(fancypanel, p = laglen, type = "const")

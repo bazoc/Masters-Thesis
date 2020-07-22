@@ -159,7 +159,7 @@ countries <- sort(countries)
 crashyrs <- as.character(seq(from = 2007, to = 2009.75, by = .25))
 var_names<- c("lgdp", "lhou", "lres", "ldef", "int")
 var_names_full <- c(var_names, crashyrs)
-var_names_fancy <- c("Log Real GDP ", "Log of Real House Prices", "Log of Residential Investment", "Log of GDP Deflator", "Stock Market Volatility", "log of ECB Total Assets")
+var_names_fancy <- c("Log of Real GDP ", "Log of Real House Prices", "Log of Residential Investment", "Log of GDP Deflator", "Shadow Policy Rate")
 
 
 
