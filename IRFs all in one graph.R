@@ -1,17 +1,9 @@
-mainirfortho1 <- bazirf.varest(fevar, n.ahead = 40, ortho = T, ci = .95, runs = 1000, seed = 253)
-mainirfortho2 <- bazirf.varest(fevarex, n.ahead = 40, ortho = T, ci = .95, runs = 1000, seed = 253)
-
-png("~/Thesis/Figures and Graphs/Main Orthogonalised IRF 1")
-bazplotirf(mainirfortho1, plot.type = "multiple", ylab = var_names_fancy)
-bazplotirf(mainirfortho2, plot.type = "multiple", ylab = var_names_fancy)
-
-def.off()
-
-bazplotirf <- function (x, plot.type = c("multiple"), 
-          names = NULL, main = NULL, sub = NULL, lty = NULL, lwd = NULL, 
-          col = NULL, ylim = NULL, ylab = NULL, xlab = NULL, nc, mar.multi = c(0, 
-                                                                               4, 0, 4), oma.multi = c(6, 4, 6, 4), adj.mtext = NA, 
-          padj.mtext = NA, col.mtext = NA, impnames = NULL, resnames = NULL, ...) 
+#mainirfortho1 <- bazirf.varest(fevar.main, n.ahead = 40, ortho = T, ci = .95, runs = 1000, seed = 253)
+bazplotirf.allinone <- function (x, plot.type = c("multiple"), 
+                        names = NULL, main = NULL, sub = NULL, lty = NULL, lwd = NULL, 
+                        col = NULL, ylim = NULL, ylab = NULL, xlab = NULL, nc, mar.multi = c(0, 
+                                                                                             4, 0, 4), oma.multi = c(6, 4, 6, 4), adj.mtext = NA, 
+                        padj.mtext = NA, col.mtext = NA, impnames = NULL, resnames = NULL, cause = NULL, ...) 
 {
   op <- par(no.readonly = TRUE)
   on.exit(par(op))
@@ -31,7 +23,7 @@ bazplotirf <- function (x, plot.type = c("multiple"),
       inames <- names
     }
   }
-
+  
   nvi <- length(inames)
   nvr <- length(rnames)
   ifelse(is.null(lty), lty <- c(1, 1, 2, 2), lty <- rep(lty, 
@@ -129,7 +121,7 @@ bazplotirf <- function (x, plot.type = c("multiple"),
       }
     }
     #      else if(abs(range[i,2]) == furthest[i]) {
-
+    
     
     if (x$boot) {
       upper <- x$Upper[[iname]]
@@ -137,12 +129,14 @@ bazplotirf <- function (x, plot.type = c("multiple"),
     }
     if ((x$model == "varest") || (x$model == "vec2var")) {
       if (x$ortho) {
-        text1 <- paste("Orthogonal Impulse Response from", 
-                       iname, sep = " ")
+        #text1 <- paste("Orthogonal Impulse Response from", 
+        #               iname, sep = " ")
+        text1 = iname
       }
       else {
-        text1 <- paste("Impulse Response from", 
-                       iname, sep = " ")
+        #text1 <- paste("Impulse Response from", 
+        #               iname, sep = " ")
+        text1 = iname
       }
     }
     else if (x$model == "svarest") {
@@ -167,101 +161,118 @@ bazplotirf <- function (x, plot.type = c("multiple"),
     x <- dp$impulses
     y <- dp$upper
     z <- dp$lower
-    ifelse(is.null(main), main <- dp$text1, main <- main)
+    ifelse(is.null(main), main <- "Orthogonalised Impulse Responses", main <- main)
+    ifelse(is.null(cause), cause <- ylab[graphnum], main <- main)
     ifelse(is.null(sub), sub <- dp$text2, sub <- sub)
     ifelse(is.null(ylim), ylim <- dp$axisrange, ylim <- ylim)
     range <- range(c(x, y, z))
     nvr <- ncol(x)
+    #setting individual rows to show reponses from individual shocks
+    
     if (missing(nc)) {
-      nc <- ifelse(nvr > 4, 2, 1)
+      #Want number of columns to equal number of variables
+      nc <- nvr
     }
-    nr <- ceiling(nvr/nc)
+    #Square so number of rows also equals number of variables
+    #nr <- ceiling(nvr/nc) old
+    nr <- nvr
     par(mfrow = c(nr, nc), mar = mar.multi, oma = oma.multi, bg = "lightgray")
-    if (nr > 1) {
-      for (i in 1:(nvr - nc)) {
-        ifelse(is.null(ylab), ylabel <- colnames(x)[i], 
-               ylabel <- ylab[i])
-        xy <- xy.coords(x[, i])
-        plot(xy, axes = FALSE, type = "l", ylab = ylabel, 
-             ylim = ylim[i,], col = col[1], lty = lty[1], lwd = lwd[1], ...)
-        axis(2, at = pretty(ylim[i,])[-1])
-        abline(h = 0, col = "red")
-        if (!is.null(y)) 
-          lines(y[, i], col = col[3], lty = lty[3], lwd = lwd[3])
-        if (!is.null(z)) 
-          lines(z[, i], col = col[3], lty = lty[3], lwd = lwd[3])
-        box()
-      }
-      for (j in (nvr - nc + 1):nvr) {
-        ifelse(is.null(ylab), ylabel <- colnames(x)[j], 
-               ylabel <- ylab[j])
-        xy <- xy.coords(x[, j])
-        plot(xy, axes = FALSE, type = "l", ylab = ylabel, 
-             ylim = ylim[j,], col = col[1], lty = lty[1], lwd = lwd[1], 
-             ...)
-        axis(2, at = pretty(ylim[j,])[-1])
-        axis(1, at = 1:(nrow(x)), labels = c(0:(nrow(x) - 
-                                                  1)))
-        box()
-        abline(h = 0, col = "red")
-        if (!is.null(y)) 
-          lines(y[, j], col = col[3], lty = lty[3], lwd = lwd[3])
-        if (!is.null(z)) 
-          lines(z[, j], col = col[3], lty = lty[3], lwd = lwd[3])
-      }
-      mtext(main, 3, line = 2, outer = TRUE, adj = adj.mtext, 
-            padj = padj.mtext, col = col.mtext, ...)
-      mtext(sub, 1, line = 4, outer = TRUE, adj = adj.mtext, 
-            padj = padj.mtext, col = col.mtext, ...)
-    }
-    else {
+    #if (nr > 1) {
+    #for (i in 1:(nvr - nc)) {
+    #  ifelse(is.null(ylab), ylabel <- colnames(x)[i], 
+    #         ylabel <- ylab[i])
+    #  xy <- xy.coords(x[, i])
+    #  plot(xy, axes = FALSE, type = "l", ylab = ylabel, 
+    #       ylim = ylim[i,], col = col[1], lty = lty[1], lwd = lwd[1])#, ...)
+    #  axis(2, at = pretty(ylim[i,])[-1])
+    #  abline(h = 0, col = "red")
+    #  if (!is.null(y)) 
+    #    lines(y[, i], col = col[3], lty = lty[3], lwd = lwd[3])
+    #  if (!is.null(z)) 
+    #    lines(z[, i], col = col[3], lty = lty[3], lwd = lwd[3])
+    #  box()
+    #}
+    # for (j in (nvr - nc + 1):nvr) {
+    #    ifelse(is.null(ylab), ylabel <- colnames(x)[j], 
+    #           ylabel <- ylab[j])
+    #    xy <- xy.coords(x[, j])
+    #   plot(xy, axes = FALSE, type = "l", ylab = ylabel, 
+    #         ylim = ylim[j,], col = col[1], lty = lty[1], lwd = lwd[1])#, 
+    #        # ...)
+    #    axis(2, at = pretty(ylim[j,])[-1])
+    #    axis(1, at = 1:(nrow(x)), labels = c(0:(nrow(x) - 
+    #                                              1)))
+    #    box()
+    #   abline(h = 0, col = "red")
+    #    if (!is.null(y)) 
+    #      lines(y[, j], col = col[3], lty = lty[3], lwd = lwd[3])
+    #    if (!is.null(z)) 
+    #      lines(z[, j], col = col[3], lty = lty[3], lwd = lwd[3])
+    #  }
+    #  mtext(main, 3, line = 2, outer = TRUE, adj = adj.mtext, 
+    #        padj = padj.mtext, col = col.mtext)#, ...)
+    #  mtext(sub, 1, line = 4, outer = TRUE, adj = adj.mtext, 
+    #        padj = padj.mtext, col = col.mtext)#, ...)
+    #}
+    if(nvr < 100) {
       for (j in 1:nvr) {
         ifelse(is.null(ylab), ylabel <- colnames(x)[j], 
                ylabel <- ylab[j])
         xy <- xy.coords(x[, j])
-        plot(xy, type = "l", ylab = ylabel, ylim = ylim, 
-             col = col[1], lty = lty[1], lwd = lwd[1], ...)
+        plot(xy, type = "l", ylab = NULL, ylim = ylim[j,], 
+             col = col[1], lty = lty[1], lwd = lwd[1])#, ...)
+        
         if (!is.null(y)) 
           lines(y[, j], col = col[3], lty = lty[3], lwd = lwd[3])
         if (!is.null(z)) 
           lines(z[, j], col = col[3], lty = lty[3], lwd = lwd[3])
         abline(h = 0, col = "red")
+        if(graphnum == 1) {
+          mtext(ylab[j], 3, line = 1, outer = F, adj = adj.mtext, 
+                padj = padj.mtext, col = col.mtext)#, ...)
+        }
+        if(j == 1) {
+          mtext(cause, 2, line = 3, outer = FALSE, adj = adj.mtext, 
+                padj = padj.mtext, col = col.mtext)#, ...)
+        }
+        
       }
       mtext(main, 3, line = 2, outer = TRUE, adj = adj.mtext, 
-            padj = padj.mtext, col = col.mtext, ...)
+            padj = padj.mtext, col = col.mtext)#, ...)
       mtext(sub, 1, line = 4, outer = TRUE, adj = adj.mtext, 
-            padj = padj.mtext, col = col.mtext, ...)
+            padj = padj.mtext, col = col.mtext)#, ...)
     }
   }
-
+  
   if (plot.type == "multiple") {
     for (i in 1:nvi) {
       dp <- dataplot(x, iname = inames[i])
-      plot.multiple(dp, nc = nc, ...)
+      graphnum = i
+      plot.multiple(dp, nc = nc, graphnum = graphnum, cause = cause, ylab = ylab, ...)
       if (nvi > 1) 
         par(ask = TRUE)
     }
   }
 }
-bazplotirf(mainirfortho1, plot.type = "multiple", ylab = var_names_fancy)
+bazplotirf.allinone(irf.main.ortho.1, plot.type = "multiple", mar = c(1,1,1,1), cause = NULL, ylab = var.names.main)
 
-#x <- mainirfortho1
-#bazplotirf(mainirfortho1, plot.type = "multiple", ylab = var_names_fancy)
-#plot(mainirfortho1, plot.type = "multiple")
-#x <- mainirfortho1
-#plot.type = c("multiple") 
-#names = NULL
-#main = NULL
-#sub = NULL
-#lty = NULL
-#lwd = NULL 
-#col = NULL
-#ylim = NULL
-#ylab = var_names_fancy
-#xlab = NULL
 
-#mar.multi = c(0,4, 0, 4)
-#oma.multi = c(6, 4, 6, 4)
-#adj.mtext = NA 
-#padj.mtext = NA
-#col.mtext = NA
+#plot(irf.main.ortho.1, plot.type = "multiple")
+x <- irf.main.ortho.1
+plot.type = c("multiple") 
+names = NULL
+main = NULL
+sub = NULL
+lty = NULL
+lwd = NULL 
+col = NULL
+ylim = NULL
+ylab = var.names.fancy.main
+xlab = NULL
+
+mar.multi = c(0,4, 0, 4)
+oma.multi = c(6, 4, 6, 4)
+adj.mtext = NA 
+padj.mtext = NA
+col.mtext = NA
+iname = inames[i]
