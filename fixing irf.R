@@ -82,8 +82,13 @@ baz.boot <- function (x, n.ahead, runs, ortho, cumulative, impulse, response,
   K <- VAR$K
   obs <- VAR$obs
   exogen1<- VAR$exogen
-  nullmat <- matrix(0, nrow = p, ncol = ncol(exogen1))
-  exogen <- rbind(nullmat, exogen1)
+  if(!is.null(exogen1)) {
+    nullmat <- matrix(0, nrow = p, ncol = ncol(exogen1))
+    exogen <- rbind(nullmat, exogen1)
+  }
+  if(is.null(exogen1)) {
+    exogen <- NULL 
+  }
   total <- (VAR$totobs)
   type <- VAR$type
   B <- Bcoef(VAR)

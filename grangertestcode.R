@@ -257,7 +257,6 @@ bazfevar <- function (y, p = 1, type = c("const", "trend", "both",
   return(result)
 }
 fevar.main <- bazfevar(full.panel, p = laglen, type = "const")
-fevarex.main <- bazfevar(dum.panel[1:7], p = laglen, type = "const", exogen = dum.panel[8:18])
 
 #object = fevar
 #cause = c("demeaned_lgdp", "demeaned_lhou")

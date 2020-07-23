@@ -194,6 +194,7 @@ var.names.dummy <- c(var.names.main, crashyrs)
 var.names.fancy.main <- c("Log of Real GDP ", "Log of Real House Prices", "Log of Residential Investment", "Log of GDP Deflator", "Shadow Policy Rate")
 var.names.assets <- c("lgdp", "lhou", "ldef", "lres", "vol", "lass")
 var.names.fancy.assets <- c("Log Real GDP ", "Log of Real House Prices","Log of GDP Deflator", "Log of Residential Investment", "Stock Market Volatility", "log of ECB Total Assets")
+var.names.full <- c("lgdp", "lhou", "ldef", "lres", "int", "vol", "lass")
 
 #Choleski decomposition
 #Set up the structural matrix
@@ -211,7 +212,7 @@ var.names.dummy.full <- c(var.names.main, var.names.assets[5:6], crashyrs)
 
 data <- list()
 for(i in 1:length(countries)) {
-  sta.full<- stayr[countries[i]]
+  sta<- stayr[countries[i]]
   end <- endyr[countries[i]]
   v1 <- with(gdp, lgdp[`Country` == countries[i]])
   v2 <- with(hou, lhou[`Country` == countries[i]])
@@ -250,8 +251,11 @@ for(i in 1:length(countries)) {
   data[[countries[i]]] <- cbind(v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,v14,v15,v16,v17,v18,v19, deparse.level = 0)
   colnames(data[[countries[i]]]) <- var.names.dummy.full
 }
-
+rm(list = c("pan", "pan1", "miss", "hou", "int", "lass", "ldef", "lgdp", "lhou", "lint", "lres", "lvol", "res",
+            "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10", "v11", "v12", "v13", "v14", "v15", "v16", "v17",
+            "v18", "v19", "num_varmain", "endyr", "sta", "end", "stayr", "econnames", "i", "missing.countries"))
 #Bringing in all my functions
 source("~/Thesis/R Code/VARselect.R")
 source("~/Thesis/R Code/grangertestcode.R")
 source("~/Thesis/R Code/fixing irf.R")
+source("~/Thesis/R Code/fixing plot(irf).R")
