@@ -1,7 +1,10 @@
-mainirfortho1 <- bazirf.varest(fancyfevar, n.ahead = 40, ortho = T, ci = .67, runs = 1000, seed = 253, response = "Log of Real")
+mainirfortho1 <- bazirf.varest(fevar, n.ahead = 40, ortho = T, ci = .95, runs = 1000, seed = 253)
+mainirfortho2 <- bazirf.varest(fevarex, n.ahead = 40, ortho = T, ci = .95, runs = 1000, seed = 253)
 
 png("~/Thesis/Figures and Graphs/Main Orthogonalised IRF 1")
 bazplotirf(mainirfortho1, plot.type = "multiple", ylab = var_names_fancy)
+bazplotirf(mainirfortho2, plot.type = "multiple", ylab = var_names_fancy)
+
 def.off()
 
 bazplotirf <- function (x, plot.type = c("multiple"), 

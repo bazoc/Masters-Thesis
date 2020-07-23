@@ -1,8 +1,8 @@
-#y = panel
-#p = 2
+#y = dum.panel
+#p = 3
 #type = "const"
 #season = NULL
-#exogen = NULL
+#exogen = dum.panel[,8:18]
 #lag.max = NULL
 #ic = c("AIC", "HQ", "SC", "FPE")
 #panel_identifier = c(1,2)
@@ -10,7 +10,7 @@
 
 bazfevar <- function (y, p = 1, type = c("const", "trend", "both", 
                              "none"), season = NULL, exogen = NULL, lag.max = NULL, 
-          ic = c("AIC", "HQ", "SC", "FPE"), panel_identifier = c(1,2), allreadydemeaned = F) 
+          ic = c("AIC", "HQ", "SC", "FPE"), panel_identifier = c(1,2), allreadydemeaned = F, exogenfixed = NULL) 
 {
   call <- match.call()
   
@@ -113,6 +113,10 @@ bazfevar <- function (y, p = 1, type = c("const", "trend", "both",
       rhs <- cbind(rhs, dums[-c(1:p), ])
     }
     if (!(is.null(exogen))) {
+
+    }
+    exogen1 <- NULL
+    if (!(is.null(exogen))) {
       exogen <- as.matrix(exogen)
       if (!identical(nrow(exogen), nrow(y))) {
         stop("\nDifferent row size of y and exogen.\n")
@@ -126,7 +130,16 @@ bazfevar <- function (y, p = 1, type = c("const", "trend", "both",
       }
       colnames(exogen) <- make.names(colnames(exogen))
       tmp <- colnames(rhs)
-      rhs <- cbind(rhs, exogen[-c(1:p), ])
+      exogencont <- list()
+      for(i in 1:no.cont) {
+        y.min <- (1 + (i-1)*cont.obs)
+        y.max <- i*cont.obs
+        exogencont[[countries[i]]] <- exogen[y.min:y.max,]
+        exogencont[[i]] <- exogencont[[i]][-c(1:p),]
+        exogen1 <- rbind(exogen1, exogencont[[countries[i]]])
+      }
+      rownames(exogen1) <- NULL
+      rhs <- cbind(rhs, exogen1)
       colnames(rhs) <- c(tmp, colnames(exogen))
     }
     datamat <- as.data.frame(rhs)
@@ -144,7 +157,7 @@ bazfevar <- function (y, p = 1, type = c("const", "trend", "both",
       call$season <- eval(season)
     result <- list(varresult = equation, datamat = data.frame(cbind(yend, 
                                                                     rhs)), y = demy, y.orig = y.orig, type = type, p = p, K = K, obs = tot.sample, 
-                   totobs = tot.sample + p, restrictions = NULL, call = call, is.fe = T, yend = yend, cont.obs = cont.obs)
+                   totobs = tot.sample + p, restrictions = NULL, call = call, is.fe = T, yend = yend, cont.obs = cont.obs, exogen= exogen1)
     class(result) <- c("varest")
   }
   else if(class(y[1,1]) != "character") {
@@ -243,10 +256,8 @@ bazfevar <- function (y, p = 1, type = c("const", "trend", "both",
   
   return(result)
 }
-  
-fevar <- bazfevar(panel, p = laglen, type = "const")
-#summary(fevar)
-#irf(fevar)
+fevar.main <- bazfevar(full.panel, p = laglen, type = "const")
+fevarex.main <- bazfevar(dum.panel[1:7], p = laglen, type = "const", exogen = dum.panel[8:18])
 
 #object = fevar
 #cause = c("demeaned_lgdp", "demeaned_lhou")
@@ -302,8 +313,8 @@ bazgrangertest <- function (object, cause = NULL)
   class(result) <- "grantest"
   return(result)
 }
-#grangerdanger <- bazgrangertest(fevar, cause = c("demeaned_lgdp", "demeaned_lhou"))
-#class(fevar)
+grangerdanger <- bazgrangertest(fevar.main)
+
 #x = grangerdanger
 summary.grantest <- function(x) {
   
@@ -343,4 +354,4 @@ summary.grantest <- function(x) {
   return(result)
 }
 
-#summary(grangerdanger)
+granger.summary <- summary(grangerdanger)

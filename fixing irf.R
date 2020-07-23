@@ -1,16 +1,15 @@
-x = fesvar
-impulse = NULL
-response = NULL
-n.ahead = 10
-ortho = TRUE 
-cumulative = FALSE
-boot = TRUE
-ci = 0.95
-runs = 100
-seed = NULL
-y.names <- colnames(x$y)
+#x = fevarex
+#impulse = NULL
+#response = NULL
+#n.ahead = 10
+#ortho = TRUE 
+#cumulative = FALSE
+#boot = TRUE
+#ci = 0.95
+#runs = 100
+#seed = NULL
+#y.names <- colnames(x$y)
 
-tp <- irf(fevar, boot = F)
 bazirf.varest <- function (x, impulse = NULL, response = NULL, n.ahead = 10, ortho = TRUE, 
           cumulative = FALSE, boot = TRUE, ci = 0.95, runs = 100, seed = NULL, 
           ...) 
@@ -82,6 +81,9 @@ baz.boot <- function (x, n.ahead, runs, ortho, cumulative, impulse, response,
   p <- VAR$p
   K <- VAR$K
   obs <- VAR$obs
+  exogen1<- VAR$exogen
+  nullmat <- matrix(0, nrow = p, ncol = ncol(exogen1))
+  exogen <- rbind(nullmat, exogen1)
   total <- (VAR$totobs)
   type <- VAR$type
   B <- Bcoef(VAR)
@@ -98,7 +100,7 @@ baz.boot <- function (x, n.ahead, runs, ortho, cumulative, impulse, response,
     whichcountry <- sample(1:10, size = 1, replace =  TRUE)
     booted <- sample(c(1:obs), replace = TRUE)
     resid <- resorig[booted, ]
-    Q <- 1 + (VAR$cont.obs*(whichcountry-1)+1)
+    Q <- p + (VAR$cont.obs*(whichcountry-1))
     lasty <- c(t(VAR$y[Q:(Q-p+1), ]))
     ysampled[c(1:p), ] <- VAR$y[c((Q-p+1):Q), ]
     for (j in 1:obs) {
@@ -107,7 +109,7 @@ baz.boot <- function (x, n.ahead, runs, ortho, cumulative, impulse, response,
       ysampled[j + p, ] <- B %*% Z + resid[j, ]
       lasty <- c(ysampled[j + p, ], lasty)
     }
-    varboot <- update(VAR, y = ysampled)
+    varboot <- update(VAR, y = ysampled, exogen = exogen)
     if (class(x) == "svarest") {
       varboot <- update(x, x = varboot)
     }
