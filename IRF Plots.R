@@ -50,4 +50,5 @@ for(i in 1:length(var.names.assets)) {
   dev.off()
 }
 
-bazplotirf(allirfs[[1]][[5]], plot.type = "multiple", ylab = var.names.fancy.main)
+tmp <- bazirf.varest(fevar.exog, n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 253)
+bazplotirf(tmp)

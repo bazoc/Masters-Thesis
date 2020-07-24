@@ -1,7 +1,7 @@
 source("~/Thesis/R Code/setup.R")
 
 #Interest rates all observations
-fevar.main <- bazfevar(full.panel, p = laglen, type = "const")
+fevar.main <- bazfevar(main.panel, p = laglen, type = "const")
 
 #Interest rates no crash years
 fevar.exog <- bazfevar(exog.panel[1:7], p = laglen, type = "const", exogen = exog.panel[8:18])

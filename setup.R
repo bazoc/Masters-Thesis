@@ -137,20 +137,12 @@ crashdummies <- Cleaned.Data[, c("Country", "yqtr", crashyrs)]
 vol$vol <- vol$Volatility
 
 #Want logs of most of these
-if(ln == T) {
-  gdp$lgdp <- log(gdp$Real.GDP..s.a)
-  hou$lhou <- log(hou$Real.House.Prices)
-  def$ldef <- log(def$GDP.Deflator..s.a)
-  res$lres <- log(res$Residential.Investment..Real.s.a)
-  ass$lass <- log(ass$ECB.Assets)
-}
-if(ln == F) {
-  gdp$lgdp <- (gdp$Real.GDP..s.a)
-  hou$lhou <- (hou$Real.House.Prices)
-  def$ldef <- (def$GDP.Deflator..s.a)
-  res$lres <- (res$Residential.Investment..Real.s.a)
-  ass$lass <- (ass$ECB.Assets)
-}
+
+gdp$lgdp <- log(gdp$Real.GDP..s.a)
+hou$lhou <- log(hou$Real.House.Prices)
+def$ldef <- log(def$GDP.Deflator..s.a)
+res$lres <- log(res$Residential.Investment..Real.s.a)
+ass$lass <- log(ass$ECB.Assets)
 
 #Give shadow rates better name
 int$int <- int$Shadow.Policy.Rate
@@ -164,6 +156,19 @@ lint <- dplyr::select(int, -Shadow.Policy.Rate)
 lass <- dplyr::select(ass, -ECB.Assets)
 lvol <- dplyr::select(vol, -Volatility)
 
+#For the graphs want not logged variables
+nlgdp <- dplyr::select(gdp, Country, yqtr,Real.GDP..s.a)
+nlhou <- dplyr::select(hou, Country, yqtr,Real.House.Prices)
+nldef <- dplyr::select(def, Country, yqtr, GDP.Deflator..s.a, yqtr)
+nlres <- dplyr::select(res, Country, yqtr, Residential.Investment..Real.s.a, yqtr)
+nlass <- dplyr::select(ass, Country, yqtr, ECB.Assets)
+colnames(nlgdp) <- c("Country", "yqtr", "gdp")
+colnames(nlhou) <- c("Country", "yqtr", "hou")
+colnames(nldef) <- c("Country", "yqtr", "def")
+colnames(nlres) <- c("Country", "yqtr", "res")
+colnames(nlass) <- c("Country", "yqtr", "ass")
+
+
 #Merge all the variables together
 pan1 <- merge(lgdp, lhou)
 pan1 <- merge(pan1, lhou)
@@ -171,14 +176,14 @@ pan1 <- merge(pan1, lres)
 pan1 <- merge(pan1, ldef)
 pan <- merge(pan1, lint)
 pan <- pan[,c(1,2,4,3,5,6,7)]
-full.panel <- pan
+main.panel <- pan
 exog.panel <- merge(pan, crashdummies)
-pre.panel <- filter(full.panel,
+pre.panel <- filter(main.panel,
                     yqtr < pre.fin)
-post.panel<- filter(full.panel,
+post.panel<- filter(main.panel,
                     yqtr >= post.sta)
 
-dum.panel <- full.panel
+dum.panel <- main.panel
 dum.panel$dumcrash <- 0
 for(i in 1:nrow(dum.panel)) {
   if(dum.panel$yqtr[i] %in% seq(from = pre.fin, to = fin.full, by = .25)) {
@@ -186,13 +191,25 @@ for(i in 1:nrow(dum.panel)) {
   }
 }
 
+complete.panel <- main.panel
 #With CB Assets
 assets.panel <- merge(pan1, lass)
+complete.panel <- merge(complete.panel, lass)
 assets.panel <- merge(assets.panel, lvol)
-
+complete.panel <- merge(complete.panel, lvol)
 #Only want post recession years
 assets.panel <- filter(assets.panel,
                        yqtr >= post.sta)
+
+#For the graphs
+pan2 <- merge(nlgdp, nlhou)
+pan2 <- merge(pan2, nlhou)
+pan2 <- merge(pan2, nlres)
+pan2 <- merge(pan2, nldef)
+pan2 <- merge(pan2, lint)
+pan2 <- pan2[,c(1,2,4,3,5,6,7)]
+pan2 <- merge(pan2, nlass)
+notlogged.panel <- merge(pan2, lvol)
 
 #Countries
 countries <- unique(gdp$Country)
