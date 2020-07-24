@@ -2,7 +2,7 @@
 #p = 3
 #type = "const"
 #season = NULL
-#exogen = dum.panel[,8:18]
+#exogen = exogenousdummy
 #lag.max = NULL
 #ic = c("AIC", "HQ", "SC", "FPE")
 #panel_identifier = c(1,2)
@@ -131,12 +131,26 @@ bazfevar <- function (y, p = 1, type = c("const", "trend", "both",
       colnames(exogen) <- make.names(colnames(exogen))
       tmp <- colnames(rhs)
       exogencont <- list()
-      for(i in 1:no.cont) {
-        y.min <- (1 + (i-1)*cont.obs)
-        y.max <- i*cont.obs
-        exogencont[[countries[i]]] <- exogen[y.min:y.max,]
-        exogencont[[i]] <- exogencont[[i]][-c(1:p),]
-        exogen1 <- rbind(exogen1, exogencont[[countries[i]]])
+      exogen1 <- NULL
+      if(ncol(exogen) == 1) {
+        for(i in 1:no.cont) {
+          y.min <- (1 + (i-1)*cont.obs)
+          y.max <- i*cont.obs
+        
+          exogencont[[countries[i]]] <- as.matrix(exogen[y.min:y.max,])
+          exogencont[[countries[i]]] <- exogencont[[countries[i]]][-c(1:p),]
+          exogen1 <- c(exogen1, exogencont[[countries[i]]])
+        }
+      }
+      else {
+        for(i in 1:no.cont) {
+          y.min <- (1 + (i-1)*cont.obs)
+          y.max <- i*cont.obs
+          
+          exogencont[[countries[i]]] <- exogen[y.min:y.max,]
+          exogencont[[countries[i]]] <- exogencont[[countries[i]]][-c(1:p),]
+          exogen1 <- rbind(exogen1, exogencont[[countries[i]]])
+        }
       }
       rownames(exogen1) <- NULL
       rhs <- cbind(rhs, exogen1)

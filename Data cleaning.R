@@ -1,3 +1,4 @@
+rm(list = ls())
 setwd("~/Thesis")
 library(dplyr)
 library(tidyverse)
@@ -96,7 +97,7 @@ econ <- arrange(econ, Country, Time)
 #Make a year and quarter variable
 econ$year = as.numeric(str_sub(econ$TIME, 1, 4))
 econ$qtr  = as.numeric(str_sub(econ$TIME, 7, 7))
-econ$yqtr = econ$year + (econ$qtr-1) / 4
+econ$yqtr = econ$year + (econ$qtr) / 4
 
 #OECD REAL HOUSE PRICES - They are seasonally adjusted
 RHO <- read.csv("Original data/OECD Real House prices.csv", na.strings=c("","NA"))
@@ -235,7 +236,7 @@ BOI <- arrange(BOI, Country, TIME)
 
 BOI$year = as.numeric(str_sub(BOI$TIME, 1, 4))
 BOI$qtr  = as.numeric(str_sub(BOI$TIME, 7, 7))
-BOI$yqtr = BOI$year + (BOI$qtr-1) / 4
+BOI$yqtr = BOI$year + (BOI$qtr) / 4
 
 #Check how it works
 count <- rep(NA, ncol(BOI))
@@ -351,8 +352,8 @@ colnames(VOL) <- c("Volatility", "yqtr")
 MON <- merge.data.frame(BAL,VOL, ALL = TRUE)
 
 #Add the Shadow rates
-SRT$yqtr <-  seq(from = 2000.5, to = 2020.25, by = .25)
-
+SRT$yqtr <-  seq(from = 2000.25, to = 2020.25, by = .25)
+SRT <- dplyr::select(SRT, Shadow.Policy.Rate, yqtr)
 #Drop all the ones i don't need
 
 #Merge them

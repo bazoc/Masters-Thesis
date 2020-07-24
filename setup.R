@@ -15,7 +15,7 @@ library(coda)
 library(parallel)
 
 #Full years we are using
-sta.full<- 2000.5
+sta.full<- 2000.25
 fin.full <- 2019.75
 
 #Pre recession
@@ -169,11 +169,19 @@ pan1 <- merge(pan1, ldef)
 pan <- merge(pan1, lint)
 pan <- pan[,c(1,2,4,3,5,6,7)]
 full.panel <- pan
-dum.panel <- merge(pan, crashdummies)
+exog.panel <- merge(pan, crashdummies)
 pre.panel <- filter(full.panel,
                     yqtr < pre.fin)
 post.panel<- filter(full.panel,
                     yqtr >= post.sta)
+
+dum.panel <- full.panel
+dum.panel$dumcrash <- 0
+for(i in 1:nrow(dum.panel)) {
+  if(dum.panel$yqtr[i] %in% seq(from = pre.fin, to = fin.full, by = .25)) {
+    dum.panel$dumcrash[i] <- 1
+  }
+}
 
 #With CB Assets
 assets.panel <- merge(pan1, lass)
