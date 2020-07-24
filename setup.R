@@ -16,7 +16,7 @@ library(parallel)
 
 #Full years we are using
 sta.full<- 2000.25
-fin.full <- 2019.75
+fin.full <- 2020
 
 #Pre recession
 pre.fin <- 2008
@@ -64,6 +64,7 @@ any(endyr != 2019.75)
 #No residential investment for belgium
 missing.countries <- c("Belgium", "Lithuania", "Latvia", "Slovak Republic", "Luxembourg", "Estonia", "Slovenia")
 
+forsummarystats <- Cleaned.Data
 Cleaned.Data <- subset(Cleaned.Data,
                        !(Cleaned.Data$Country %in% missing.countries))
 
@@ -74,8 +75,11 @@ unique(Cleaned.Data$Country)
 econnames <- colnames(Cleaned.Data)
 Cleaned.Data$crashdum <- 0
 #Make a dummy variable for  year and qtr 2007-2009
+firstcrashqtrr = 2007
+lastcrashyqtr = 2010
+crashyrs <-seq(from = firstcrashqtrr, lastcrashyqtr, by = .25)
 for(i in 1:nrow(Cleaned.Data)) {
-  if(Cleaned.Data$year[i] %in% 2007:2009) {
+  if(Cleaned.Data$yqtr[i] %in% crashyrs) {
     Cleaned.Data$crashdum[i] <- 1
   }
 }
@@ -84,9 +88,8 @@ experiment <- pivot_wider(Cleaned.Data,names_from = yqtr, values_from = crashdum
 
 #Have to fix this if you add more columns or dates!!!!!!!!!!
 experiment[is.na(experiment)] <- 0
-experiment <- experiment[,48:59]
+experiment <- experiment[,as.character(crashyrs)]
 Cleaned.Data <- cbind(Cleaned.Data, experiment)
-crashyrs <-colnames(experiment)
 
 #Number of proper variables
 num_varmain <- 1:5
@@ -242,22 +245,23 @@ for(i in 1:length(countries)) {
   
   
   #Dummy Variables for years
-  v8 <- with(Cleaned.Data, `2007`[`Country` == countries[i]])
-  v9 <- with(Cleaned.Data, `2007.25`[`Country` == countries[i]])
-  v10 <- with(Cleaned.Data, `2007.5`[`Country` == countries[i]])
-  v11 <- with(Cleaned.Data, `2007.75`[`Country` == countries[i]])
-  v12<- with(Cleaned.Data, `2008`[`Country` == countries[i]])
-  v13<- with(Cleaned.Data, `2008.25`[`Country` == countries[i]])
-  v14<- with(Cleaned.Data, `2008.5`[`Country` == countries[i]])
-  v15<- with(Cleaned.Data, `2008.75`[`Country` == countries[i]])
-  v16<- with(Cleaned.Data, `2009`[`Country` == countries[i]])
-  v17<- with(Cleaned.Data, `2009.25`[`Country` == countries[i]])
-  v18<- with(Cleaned.Data, `2009.5`[`Country` == countries[i]])
-  v19<- with(Cleaned.Data, `2009.75`[`Country` == countries[i]])
+  #v8 <- with(Cleaned.Data, `2007`[`Country` == countries[i]])
+  #v9 <- with(Cleaned.Data, `2007.25`[`Country` == countries[i]])
+  #v10 <- with(Cleaned.Data, `2007.5`[`Country` == countries[i]])
+  #v11 <- with(Cleaned.Data, `2007.75`[`Country` == countries[i]])
+  #v12<- with(Cleaned.Data, `2008`[`Country` == countries[i]])
+  #v13<- with(Cleaned.Data, `2008.25`[`Country` == countries[i]])
+  #v14<- with(Cleaned.Data, `2008.5`[`Country` == countries[i]])
+  #v15<- with(Cleaned.Data, `2008.75`[`Country` == countries[i]])
+  #v16<- with(Cleaned.Data, `2009`[`Country` == countries[i]])
+  #v17<- with(Cleaned.Data, `2009.25`[`Country` == countries[i]])
+  #v18<- with(Cleaned.Data, `2009.5`[`Country` == countries[i]])
+  #v19<- with(Cleaned.Data, `2009.75`[`Country` == countries[i]])
   
   #Bind them all together
-  data[[countries[i]]] <- cbind(v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,v14,v15,v16,v17,v18,v19, deparse.level = 0)
-  colnames(data[[countries[i]]]) <- var.names.dummy.full
+  data[[countries[i]]] <- cbind(v1,v2,v3,v4,v5,v6,v7,#v8,v9,v10,v11,v12,v13,v14,v15,v16,v17,v18,v19, 
+                                deparse.level = 0)
+  colnames(data[[countries[i]]]) <- var.names.full
 }
 rm(list = c("pan", "pan1", "miss", "hou", "int", "lass", "ldef", "lgdp", "lhou", "lint", "lres", "lvol", "res",
             "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10", "v11", "v12", "v13", "v14", "v15", "v16", "v17",
