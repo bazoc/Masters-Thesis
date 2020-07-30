@@ -31,7 +31,6 @@ defplot <- ggplot(notlogged.panel, aes(y = `def`, x = `yqtr`, color = Country, t
 resplot <- ggplot(notlogged.panel, aes(y = `res`, x = `yqtr`, color = Country, text = paste("country:", Country))) +
   geom_line(size = 1.2) +
   labs(x = "Year", y = "Real Residential Investment") +
-  guides(color = FALSE) +
   theme_bw() 
 #  ggtitle("Real GDP over Time") +
 
@@ -50,14 +49,13 @@ assplot <- ggplot(onecountry, aes(y = `ass`, x = `yqtr`)) +
   labs(x = "Year", y = "ECB Total Assets (Billions €)") +
   theme_bw()
 
-gdpplot
+resplot 
+
+png("~/Thesis/Figures and Graphs/variablesgraph.png")
 
 grid.arrange(gdpplot, houplot, defplot, resplot, intplot, volplot, assplot, nrow = 4)
+dev.off()
 # facet_wrap( ~ group) if i add groups so theyre on their own graphs
 
 ggplotly(gdpplot)
-
-ggplot(infant, aes(y = bwt * 28.35, x = `Ethnic group`)) +  # Data, Aesthetics
-  geom_point(alpha = 1) + # Geometries
-  ylab("Birth Weight (g)") # Coordinates
 

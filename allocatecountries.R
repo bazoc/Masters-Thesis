@@ -1,8 +1,12 @@
 library(plyr)
 library(ggplot2)
+library(panelvar)
+library(PEIP)
+library(tolerance)
+
 #Numbet of periods ahead to assess at
 q = 4
-
+minncountries <- 3 #The minimum number of countries in a group
 #10 countries, possibly up to ~14
 #Minimum 3 countries in each group
 #(3,7) (4,6) (5,5)
@@ -27,7 +31,7 @@ dtrad <- vector()
 d <- vector()
 N1T <- vector()
 N2T <- vector()
-distancemeasure <- matrix(NA, nrow = length(totcombos), ncol = 3)
+distancemeasure <- matrix(NA, nrow = length(totcombos), ncol = 8)
 
 
 for(i in 1:length(totcombos)) {
@@ -35,13 +39,13 @@ for(i in 1:length(totcombos)) {
   index <- !(countries %in% totcombos[[i]])
   current.countries2 <- countries[index]
   
-  current.data1 <- dplyr::filter(pan,
+  current.data1 <- dplyr::filter(main.panel,
                             `Country` %in% current.countries1)
-  current.data2 <- dplyr::filter(pan,
+  current.data2 <- dplyr::filter(main.panel,
                                  `Country` %in% current.countries2)
   
-  current.model1 <- pvarfeols(var_names, lags = laglen, data = current.data1, panel_identifier = c("Country", "yqtr"))
-  current.model2 <- pvarfeols(var_names, lags = laglen, data = current.data2, panel_identifier = c("Country", "yqtr"))
+  current.model1 <- pvarfeols(var.names.main, lags = laglen, data = current.data1, panel_identifier = c("Country", "yqtr"))
+  current.model2 <- pvarfeols(var.names.main, lags = laglen, data = current.data2, panel_identifier = c("Country", "yqtr"))
   
   current.irf1 <- oirf(current.model1, n.ahead = q)
   current.irf2 <- oirf(current.model2, n.ahead = q)
@@ -52,42 +56,54 @@ for(i in 1:length(totcombos)) {
   S1 <- sum(s1)
   S2 <- sum(s2)
   
-  dtrad[i] <- sum(abs(s1-s2))
-  d[i] <- abs(S1 - S2)
-  
+  distancemeasure[i,1] <- abs(sum((s1-s2)))
+  distancemeasure[i,2] <- i
+  distancemeasure[i,3] <- S1
+  distancemeasure[i,4] <- S2
+
   
   #Number of variables in each model times
   N1T[i] <- nrow(current.model1$Set_Vars)
   N2T[i] <- nrow(current.model2$Set_Vars)
   
+  if(abs(S1) > abs(S2)) distancemeasure[i,5] = 0
+  else distancemeasure[i,5] = 1
+  distancemeasure[i,6] <- length(current.countries1)
+  d[i] <- abs(S1 - S2)
+  
 }
 
-variance.d <-var(d)
-var3 <- var(d[no3])
-var4 <- var(d[no4])
-var5 <- var(d[no5])
-
-var31 <- var(dtrad[no3])
-var41 <- var(dtrad[no4])
-var51 <- var(dtrad[no5])
-
-sigma3 <- var3*(((1/N1T[min(no3)]) + (1/N2T[min(no3)]))^-1)
-sigma4 <- var4*(((1/N1T[min(no4)]) + (1/N2T[min(no4)]))^-1)
-sigma5 <- var5*(((1/N1T[min(no5)]) + (1/N2T[min(no5)]))^-1)
-
-sigma31 <- var31*(((1/N1T[min(no3)]) + (1/N2T[min(no3)]))^-1)
-sigma41 <- var41*(((1/N1T[min(no4)]) + (1/N2T[min(no4)]))^-1)
-sigma51 <- var51*(((1/N1T[min(no5)]) + (1/N2T[min(no5)]))^-1)
-
-sigma <- (sigma3 + sigma4 + sigma5) /3
-sigma1 <- (sigma31 + sigma41 + sigma51) /3
-stat <- qnorm(c(.975) , mean = 0 , sd = sqrt(sigma))
-outliers <- dtrad >= stat
-
-totcombos[c(which(d == min(d)))]
-distscore
-for(i in length(countries)) {
-  temp <- countries[i]
-  count.countries <- temp %in% totcombos
-  distscore
+dist_variance <-var(distancemeasure[,1])
+for(i in 1:length(totcombos)) {
+  distancemeasure[i,7] <- dist_variance/((1/distancemeasure[i,6])+1/(length(countries) - distancemeasure[i,6]))
+  distancemeasure[i,8] <- distancemeasure[i,1] / (sqrt(distancemeasure[i,7]/distancemeasure[i,6] + distancemeasure[i,7]/(length(countries) - distancemeasure[i,6])))
 }
+
+distancemeasure_sorted <- distancemeasure[order(distancemeasure[,8]),]
+
+critical_value <- tinv(.95, length(countries)- 2) #Inverse t distribution, lose 2 degrees of freedom due to no. oif groups
+ngrouping <- sum(distancemeasure_sorted[,8] > critical_value)
+
+max_countries <- vector()
+for(i in (nrow(distancemeasure)-ngrouping+1):nrow(distancemeasure)) {
+  if(distancemeasure_sorted[i,5] == 0) { #If the country group are ther bigger effect
+    max_countries <- c(max_countries, totcombos[distancemeasure_sorted[i,2]][[1]])
+  }
+  else { #If the country group is the smaller effects
+    notmaxcountries <- totcombos[distancemeasure_sorted[i,2]][[1]]
+    index <- !(countries %in% notmaxcountries)
+    max_countries <- c(max_countries, countries[index])
+  }
+}
+
+x <-table(max_countries)
+
+M= 0
+for(N1 in minncountries:(length(countries)-minncountries)) {
+  M <- M + choose(length(countries),N1)
+}
+K <- M/2
+quants <- qnhyper(p = .95, m = M, k = K, n = sum(ngrouping))
+return(quants)
+
+quants <- crit_value_distance(length(countries), sum(ngrouping), minncountries, .95)

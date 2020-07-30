@@ -368,3 +368,5 @@ summary.grantest <- function(x) {
 }
 
 granger.summary <- summary(grangerdanger)
+granger.summary$forexcel
+write.csv(granger.summary$forexcel, "~/Thesis/Data/Granger Test.csv")

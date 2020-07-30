@@ -50,5 +50,6 @@ for(i in 1:length(var.names.assets)) {
   dev.off()
 }
 
-tmp <- bazirf.varest(fevar.exog, n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 253)
+tmp <- bazirf.varest(fevar.main, n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 253)
 bazplotirf(tmp)
+ 

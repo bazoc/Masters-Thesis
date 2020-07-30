@@ -9,8 +9,7 @@ plot(fevdfevar, plot.type = "multiple", mar = c(4,1,2,3), col = fevdcols, xlab =
 
 par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
 plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-legend("bottom", c("GDP", "House Prices", "Res. Investment", "Inflation", "Interest"), xpd = TRUE, horiz = TRUE, inset = c(0, 
+legend("bottom", c("GDP", "House Prices", "Res. Investment", "Inflation", "Interest"), xpd = FALSE, horiz = TRUE, inset = c(0, 
                                                                                  0), bty = "n", pch = rep(15,5), col = fevdcols, cex = .9)
 
 dev.off()
-

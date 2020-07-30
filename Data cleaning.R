@@ -270,14 +270,15 @@ library(plm)
 pboi <- pdata.frame(BOI, index = c("t","Country"))
 
 #Make Res investment  real
-BOI$`Residential Investment, Real s.a` <- BOI$`Residential Investment, Nominal s,a` /BOI$`GDP Deflator, s.a`
+BOI$`Residential Investment, Real s.a` <- BOI$`Residential Investment, Nominal s,a` / BOI$`GDP Deflator, s.a`
+
 
 #Reorder the columns
 BOI <- BOI[,c(1,2,3,11,12,13,17,4,5,6,7,8,9,10,14,15,16,18)]
 
 #Normalise everything so its in 100 = 2015
 ind2015 <- subset(BOI,
-                  yqtr == 2015.00)
+                  yqtr == 2015.25)
 BOI2015 <- BOI
 country <- NULL
 BOI2015[,8:ncol(BOI)] <- NA
@@ -287,6 +288,7 @@ for(i in 1:nrow(BOI)) {
   BOI2015[i,8:18] <- (BOI[i,8:18]*100) / country[,8:18]
 }
 
+BOI$`Residential Investment, Real s.a` <- BOI2015$`Residential Investment, Real s.a`
 
 #BIS Nominal small excel file
 BIS <- subset(BIS,
@@ -358,6 +360,8 @@ SRT <- dplyr::select(SRT, Shadow.Policy.Rate, yqtr)
 
 #Merge them
 MON <- merge.data.frame(MON,SRT, ALL = TRUE)
+
+
 rm(list = c("BAL","country","miss","miss1","RHO","NHO","sm","meas","meas1","CPI","QNA","names","count","useful","VOL","house","ind2015"))
 
 #Merge Monetary policy and the main one

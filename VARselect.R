@@ -122,11 +122,20 @@ bazfeVARselect <- function (y, lag.max = 10, type = c("const", "trend",
   return(list(selection = order, criteria = criteria))
 }
 
-#bazfeVARselect(y = panel[,1:7],
-#               lag.max = 15,
-#               type = "const",
-#               season = NULL,
-#               exogen = panel[,8:19],
-#               panel_identifier = c(1,2)
-#)
+bazfeVARselect(y = main.panel[,c("Country", "yqtr", "lgdp", "lhou", "lres", "ldef", "int")],
+               lag.max = 10,
+               type = "const",
+               season = NULL,
+               panel_identifier = c(1,2)
+)
+bazfeVARselect(y = pre.panel[,c("Country", "yqtr", "lgdp", "lhou", "lres", "ldef", "int")],
+               lag.max = 10,
+               type = "const",
+               season = NULL,
+               panel_identifier = c(1,2)
+)
+bazfeVARselect(y = post.panel,
+               lag.max = 10, 
+               season = NULL,
+               panel_identifier = c(1,2))
 laglen = 3

@@ -64,7 +64,6 @@ any(endyr != 2019.75)
 #No residential investment for belgium
 missing.countries <- c("Belgium", "Lithuania", "Latvia", "Slovak Republic", "Luxembourg", "Estonia", "Slovenia")
 
-forsummarystats <- Cleaned.Data
 Cleaned.Data <- subset(Cleaned.Data,
                        !(Cleaned.Data$Country %in% missing.countries))
 
@@ -129,6 +128,11 @@ ass <- dplyr::select(Cleaned.Data,
                      Country,
                      yqtr,
                      `ECB.Assets`)
+gfcf <- dplyr::select(Cleaned.Data,
+                     Country,
+                     yqtr,
+                     'Real.GFCF..s.a'
+)
 
 
 crashdummies <- Cleaned.Data[, c("Country", "yqtr", crashyrs)]
@@ -143,6 +147,7 @@ hou$lhou <- log(hou$Real.House.Prices)
 def$ldef <- log(def$GDP.Deflator..s.a)
 res$lres <- log(res$Residential.Investment..Real.s.a)
 ass$lass <- log(ass$ECB.Assets)
+gfcf$lgfcf <- log(gfcf$Real.GFCF..s.a)
 
 #Give shadow rates better name
 int$int <- int$Shadow.Policy.Rate
@@ -155,6 +160,7 @@ lres <- dplyr::select(res, -Residential.Investment..Real.s.a)
 lint <- dplyr::select(int, -Shadow.Policy.Rate)
 lass <- dplyr::select(ass, -ECB.Assets)
 lvol <- dplyr::select(vol, -Volatility)
+lgfcf <-dplyr::select(gfcf, -`Real.GFCF..s.a`)
 
 #For the graphs want not logged variables
 nlgdp <- dplyr::select(gdp, Country, yqtr,Real.GDP..s.a)
@@ -174,14 +180,17 @@ pan1 <- merge(lgdp, lhou)
 pan1 <- merge(pan1, lhou)
 pan1 <- merge(pan1, lres)
 pan1 <- merge(pan1, ldef)
+pan1 <- merge(pan1, lgfcf)
 pan <- merge(pan1, lint)
-pan <- pan[,c(1,2,4,3,5,6,7)]
+pan <- pan[,c("Country", "yqtr", "lgdp", "lhou", "lres", "ldef", "int")]
 main.panel <- pan
 exog.panel <- merge(pan, crashdummies)
 pre.panel <- filter(main.panel,
                     yqtr < pre.fin)
 post.panel<- filter(main.panel,
                     yqtr >= post.sta)
+gfcf.panel<- merge(main.panel, lgfcf)
+gfcf.panel <- gfcf.panel[,c("Country", "yqtr", "lgdp", "lgfcf", "lhou", "lres", "ldef", "int")]
 
 dum.panel <- main.panel
 dum.panel$dumcrash <- 0
@@ -223,6 +232,7 @@ var.names.fancy.main <- c("Log of Real GDP ", "Log of Real House Prices", "Log o
 var.names.assets <- c("lgdp", "lhou", "ldef", "lres", "vol", "lass")
 var.names.fancy.assets <- c("Log Real GDP ", "Log of Real House Prices","Log of GDP Deflator", "Log of Residential Investment", "Stock Market Volatility", "log of ECB Total Assets")
 var.names.full <- c("lgdp", "lhou", "ldef", "lres", "int", "vol", "lass")
+var.names.gfcf<- c("lgdp", "lhou","lgfcf", "lres", "ldef", "int")
 
 #Choleski decomposition
 #Set up the structural matrix
