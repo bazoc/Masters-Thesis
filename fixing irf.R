@@ -101,6 +101,7 @@ baz.boot <- function (x, n.ahead, runs, ortho, cumulative, impulse, response,
   BOOT <- vector("list", runs)
   ysampled <- matrix(0, nrow = total, ncol = K)
   colnames(ysampled) <- colnames(VAR$y)
+  no.cont <- VAR$no.cont
   Zdet <- NULL
   if (ncol(VAR$datamat) > (K * (p + 1))) {
     Zdet <- as.matrix(VAR$datamat[, (K * (p+1 ) + 1):ncol(VAR$datamat)])
@@ -108,7 +109,7 @@ baz.boot <- function (x, n.ahead, runs, ortho, cumulative, impulse, response,
   resorig <- scale(resid(VAR), scale = FALSE)
   B <- Bcoef(VAR)
   for (i in 1:runs) {
-    whichcountry <- sample(1:10, size = 1, replace =  TRUE)
+    whichcountry <- sample(1:no.cont, size = 1, replace =  TRUE)
     booted <- sample(c(1:obs), replace = TRUE)
     resid <- resorig[booted, ]
     Q <- p + (VAR$cont.obs*(whichcountry-1))

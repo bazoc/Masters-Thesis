@@ -27,32 +27,37 @@ post.sta <- 2012
 #Set whether VAR is in log or levels terms
 ln = T
 #House prices go up to 2020, unconventional monetary policy starts at 2008
-Cleaned.Data <- subset(Cleaned.Data,
+Cleaned.Data <- filter(Cleaned.Data,
                        yqtr >= sta.full& yqtr <= fin.full)
 Cleaned.Data <- dplyr::select(Cleaned.Data, - X)
 rownames(Cleaned.Data) <- NULL
 
-miss <- subset(Cleaned.Data,
+miss <- filter(Cleaned.Data,
                is.na(Cleaned.Data$Real.GDP..s.a))
 unique(miss$Country)
 #Real GDP there
 
-miss <- subset(Cleaned.Data,
+miss <- filter(Cleaned.Data,
                is.na(Cleaned.Data$GDP.Deflator..s.a))
 unique(miss$Country)
 #Deflator there
 
-miss <- subset(Cleaned.Data,
+miss <- filter(Cleaned.Data,
                is.na(Cleaned.Data$Residential.Investment..Real.s.a))
 unique(miss$Country)
 #No res investment for Belgium
 
-miss <- subset(Cleaned.Data,
+miss <- filter(Cleaned.Data,
                is.na(Cleaned.Data$Real.GFCF..s.a))
 unique(miss$Country)
 #Capital Formation there
 
-miss <- subset(Cleaned.Data,
+#miss <- filter(Cleaned.Data,
+#               is.na(Cleaned.Data$`Real GNI`))
+#unique(miss$Country)
+#No missing values
+
+miss <- filter(Cleaned.Data,
                is.na(Cleaned.Data$Real.House.Prices))
 unique(miss$Country)
 miss <- filter(Cleaned.Data, !is.na(Cleaned.Data$Real.House.Prices))
@@ -64,7 +69,7 @@ any(endyr != 2019.75)
 #No residential investment for belgium
 missing.countries <- c("Belgium", "Lithuania", "Latvia", "Slovak Republic", "Luxembourg", "Estonia", "Slovenia")
 
-Cleaned.Data <- subset(Cleaned.Data,
+Cleaned.Data <- filter(Cleaned.Data,
                        !(Cleaned.Data$Country %in% missing.countries))
 
 #Drop the years for the countries that are missing values
@@ -131,8 +136,11 @@ ass <- dplyr::select(Cleaned.Data,
 gfcf <- dplyr::select(Cleaned.Data,
                      Country,
                      yqtr,
-                     'Real.GFCF..s.a'
-)
+                     'Real.GFCF..s.a')
+#gni <- dplyr::select(Cleaned.Data,
+#                      Country,
+#                      yqtr,
+#                      'Real.GFCF..s.a')#
 
 
 crashdummies <- Cleaned.Data[, c("Country", "yqtr", crashyrs)]
@@ -148,7 +156,7 @@ def$ldef <- log(def$GDP.Deflator..s.a)
 res$lres <- log(res$Residential.Investment..Real.s.a)
 ass$lass <- log(ass$ECB.Assets)
 gfcf$lgfcf <- log(gfcf$Real.GFCF..s.a)
-
+#gni$lgni <- log(gni$`Real GNI`)
 #Give shadow rates better name
 int$int <- int$Shadow.Policy.Rate
 
@@ -243,7 +251,8 @@ amat[4:5,3] <- NA
 amat[5,4]   <- NA
 amat
 
-
+north <- c("Germany", "France", "Ireland", "Austria", "Finland", "Netherlands")
+south <- c("Greece", "Italy", "Portugal", "Spain")
 
 #Making a list with each country as its own dataframe
 var.names.dummy.full <- c(var.names.main, var.names.assets[5:6], crashyrs)

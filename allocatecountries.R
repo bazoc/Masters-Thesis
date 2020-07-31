@@ -22,11 +22,26 @@ enum.choose <- function(x, k) {
 
 nocount <- length(countries)
 no3 <- 1:choose(nocount,3)
-no4 <- (max(no3)+1):(max(no3) + choose(nocount,4))
-no5 <- (max(no4) + 1): (max(no4) + choose(nocount,5))
+no4 <- (max(no3) + 1): (max(no3) + choose(nocount,4))
+no5 <- (max(no4) + 1): (max(no4) + choose(nocount,5)/2)
 
+totcombos34 <- c(enum.choose(countries, 3), enum.choose(countries, 4))
+totcombos5 <- enum.choose(countries, 5)
+allreadyused <- list()
+count1 = 0
+repeatindex <- vector("logical", length = choose(nocount, 5))
+#Get rid of all the inverse groups in 10 choose 5
+for(i in 1:choose(nocount,5)) {
+  othercountries <- countries[!(countries %in% totcombos5[[i]])]
+  if(totcombos5[i] %in% allreadyused) {
+    repeatindex[i] <- 1
+  }
+  otherlist <- list(othercountries)
+  allreadyused <- c(allreadyused, otherlist)
+} 
+#Starts repeating after half way
+totcombos <- c(totcombos34, totcombos5[1:(252/2)])
 
-totcombos <- c(enum.choose(countries, 3), enum.choose(countries, 4), enum.choose(countries, 5))
 dtrad <- vector()
 d <- vector()
 N1T <- vector()
@@ -96,14 +111,19 @@ for(i in (nrow(distancemeasure)-ngrouping+1):nrow(distancemeasure)) {
   }
 }
 
-x <-table(max_countries)
+sorttable <-table(max_countries)
 
 M= 0
 for(N1 in minncountries:(length(countries)-minncountries)) {
   M <- M + choose(length(countries),N1)
 }
 K <- M/2
-quants <- qnhyper(p = .95, m = M, k = K, n = sum(ngrouping))
-return(quants)
+quants <- qhyper(p = c(.05, .95), m = K, n = K, k = sum(ngrouping))
 
-quants <- crit_value_distance(length(countries), sum(ngrouping), minncountries, .95)
+countfreq <- as.matrix(sorttable)
+countorder <- rownames(countfreq)
+countorder <- countorder[order(countfreq)]
+small.reaction.group <- countorder[1:5]
+large.reaction.group <- countorder[6:10]
+
+save(small.reaction.group, large.reaction.group, quants = quants, sorttable, file = "~/Thesis/Data/Sorting result.Rdata")

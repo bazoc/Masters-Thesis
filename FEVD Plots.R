@@ -1,4 +1,4 @@
-fevdfevar = vars:::fevd.varest(fevar.main, n.ahead = 40)
+fevdfevar = vars:::fevd.varest(fevar.main1, n.ahead = 40)
 
 names(fevdfevar) <- var.names.fancy.main
 fevdcols <- c("pink", "lightsteelblue", "paleturquoise4", "lemonchiffon2", "gray88")

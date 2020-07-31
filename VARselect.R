@@ -122,11 +122,11 @@ bazfeVARselect <- function (y, lag.max = 10, type = c("const", "trend",
   return(list(selection = order, criteria = criteria))
 }
 
-bazfeVARselect(y = main.panel[,c("Country", "yqtr", "lgdp", "lhou", "lres", "ldef", "int")],
-               lag.max = 10,
-               type = "const",
-               season = NULL,
-               panel_identifier = c(1,2)
+mainlagselect <- bazfeVARselect(y = main.panel[,c("Country", "yqtr", "lgdp", "lhou", "lres", "ldef", "int")],
+                                lag.max =5,
+                                type = "const",
+                                season = NULL,
+                                panel_identifier = c(1,2)
 )
 bazfeVARselect(y = pre.panel[,c("Country", "yqtr", "lgdp", "lhou", "lres", "ldef", "int")],
                lag.max = 10,
@@ -138,4 +138,7 @@ bazfeVARselect(y = post.panel,
                lag.max = 10, 
                season = NULL,
                panel_identifier = c(1,2))
-laglen = 3
+
+write.csv(mainlagselect$criteria, "~/Thesis/Data/Lag select main.csv")
+
+laglen = 4

@@ -171,7 +171,7 @@ bazfevar <- function (y, p = 1, type = c("const", "trend", "both",
       call$season <- eval(season)
     result <- list(varresult = equation, datamat = data.frame(cbind(yend, 
                                                                     rhs)), y = demy, y.orig = y.orig, type = type, p = p, K = K, obs = tot.sample, 
-                   totobs = tot.sample + p, restrictions = NULL, call = call, is.fe = T, yend = yend, cont.obs = cont.obs, exogen= exogen1)
+                   totobs = tot.sample + p, restrictions = NULL, call = call, is.fe = T, yend = yend, cont.obs = cont.obs, exogen= exogen1, no.cont = no.cont)
     class(result) <- c("varest")
   }
   else if(class(y[1,1]) != "character") {
@@ -367,6 +367,8 @@ summary.grantest <- function(x) {
   return(result)
 }
 
+fevar.main <- bazfevar(main.panel, p = laglen, type = "const")
+grangerdanger <- bazgrangertest(fevar.main)
 granger.summary <- summary(grangerdanger)
 granger.summary$forexcel
 write.csv(granger.summary$forexcel, "~/Thesis/Data/Granger Test.csv")

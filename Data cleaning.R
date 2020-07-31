@@ -16,6 +16,7 @@ BIS <- read.csv("Original data/BIS Property Prices Nominal.csv", na.strings=c(""
 BAL <- read.csv("Original data/ECB Total assets - Internal Liquidity Management.csv", na.strings=c("","NA"), header = F, skip = 4)
 VOL <- read.csv("Original data/Bloomberg VSTOXX index.csv", na.strings=c("-","NA"), header = T)
 SRT <- read.csv("Original data/Bloomberg Shadow policy rate Original.csv")
+GNI <- read.csv("Original data/OECD GNI Quarterly national accounts original.csv", na.strings = c("", "NA"))
 
 #Variable with eurozone countries
 eurozone <- c("Austria","Belgium","Cyprus","Estonia","Finland","France","Germany","Greece","Ireland","Italy","Latvia","Lithuania","Luxembourg","Malta","Netherlands","Portugal","Slovak Republic","Slovenia","Spain")
@@ -266,8 +267,6 @@ for(i in unique(BOI$Country)) {
     lis <- matrix(c(tem,nah),nrow = length(tem), ncol = 2)
     BOI$t[lis[,1]] <- lis[,2]
 }
-library(plm)
-pboi <- pdata.frame(BOI, index = c("t","Country"))
 
 #Make Res investment  real
 BOI$`Residential Investment, Real s.a` <- BOI$`Residential Investment, Nominal s,a` / BOI$`GDP Deflator, s.a`
@@ -300,7 +299,7 @@ colnames(BIS) <- c("ï..LOCATION", "Country", "yearqtr","BIS Nominal House Price
 
 BIS$year = as.numeric(str_sub(BIS$yearqtr, 2, 5))
 BIS$qtr  = as.numeric(str_sub(BIS$yearqtr, 8, 8))
-BIS$yqtr = BIS$year + (BIS$qtr-1) / 4
+BIS$yqtr = BIS$year + (BIS$qtr) / 4
 
 miss <- subset(BIS,
                year >= 2000 &
@@ -362,10 +361,42 @@ SRT <- dplyr::select(SRT, Shadow.Policy.Rate, yqtr)
 MON <- merge.data.frame(MON,SRT, ALL = TRUE)
 
 
-rm(list = c("BAL","country","miss","miss1","RHO","NHO","sm","meas","meas1","CPI","QNA","names","count","useful","VOL","house","ind2015"))
-
 #Merge Monetary policy and the main one
 Cleaned.Data <- merge.data.frame(BOI, MON, All = T)
+
+#GNI
+#GNI <- read.csv("Original data/OECD GNI Quarterly national accounts original.csv", na.strings = c("", "NA"))
+
+#GNI <- filter(GNI,
+#              Country %in% eurozone)
+#unique(GNI$Country)
+#unique(GNI$Measure)
+#
+#GNI <- filter(GNI,
+#              Measure == "National currency, current prices, quarterly levels")
+#miss <- filter(GNI,
+#               is.na(GNI$Value))
+#unique(miss$Country)
+#namesgni <- colnames(GNI) 
+#namesgni[17] <- "Nominal GNI"
+#colnames(GNI) <- namesgni
+#GNI <- dplyr::select(GNI, Country, TIME, `Nominal GNI`)
+#GNI$year = as.numeric(str_sub(GNI$TIME, 1, 4))
+#GNI$qtr  = as.numeric(str_sub(GNI$TIME, 7, 7))
+#GNI$yqtr = GNI$year + (GNI$qtr) / 4
+#
+#Cleaned.Data <- merge(GNI, Cleaned.Data, ALL = T)
+#Cleaned.Data$`Real GNI`  <- Cleaned.Data$`Nominal GNI`/Cleaned.Data$`GDP Deflator, s.a`
+#for(i in 1:nrow(Cleaned.Data)) {
+#  country <- filter(Cleaned.Data,
+#                    `Country` == Cleaned.Data[i,"Country"],
+#                    `yqtr` == 2015.25)
+#  Cleaned.Data[i,"Real GNI"] <- (Cleaned.Data[i,"Real GNI"]*100) / country[,"Real GNI"]
+#}
+
+
+rm(list = c("BAL","country","miss","miss1","RHO","NHO","sm","meas","meas1","CPI","QNA","names",
+            "count","useful","VOL","house","ind2015", "GNI"))
 
 #Saving for orhter r things
 write.csv(Cleaned.Data, file = "Data/CleanedData.csv")
