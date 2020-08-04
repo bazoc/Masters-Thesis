@@ -339,7 +339,7 @@ summary.grantest <- function(x) {
   for(i in 1:E) {
     temp <- c(temp,"F Value", "P Value")
   }
-  temp1 <- paste(effectnames, temp, sep = " ")
+  temp1 <- paste(rep(effectnames, each = 2), temp, sep = " ")
   
   critstattot <- list()
   critstat <- matrix(NA, nrow = C, ncol = E*2)

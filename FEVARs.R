@@ -97,3 +97,38 @@ summary(fevar.south)$roots
 summary(fevar.nogreece)$roots
 summary(fevar.noireland)$roots
 #Good on all the roots
+
+#Make Coefficient table
+maincoeftable <- list()
+maincoeftable[["lgdp"]] <- tidy(fevar.main$varresult$demeaned_lgdp)
+maincoeftable[["lres"]] <- tidy(fevar.main$varresult$demeaned_lres)
+maincoeftable[["ldef"]] <- tidy(fevar.main$varresult$demeaned_ldef)
+maincoeftable[["int"]]  <- tidy(fevar.main$varresult$demeaned_int)
+maincoeftable[["lhou"]] <- tidy(fevar.main$varresult$demeaned_lhou)
+
+
+for(j in 1:length(var.names.main)) {
+  #Round it as well
+  coeftable <- maincoeftable[[var.names.main[j]]]
+  coeftable <- as.data.frame(coeftable)
+  coeftable[,2] <- as.character(coeftable[,2])
+  for(i in 1:(length(var.names.main)*laglen)) { # All the coefficients
+    if(coeftable[i,5] < .01) {
+      coeftable[i,2] <- paste(coeftable[i,2], "***")
+    }
+    else if(coeftable[i,5] < .05) {
+      coeftable[i,2] <- paste(coeftable[i,2], "**")
+    }
+    else if(coeftable[i,5] < .1) {
+      coeftable[i,2] <- paste(coeftable[i,2], "*")
+    }
+  }
+  maincoeftable[[var.names.main[j]]] <- coeftable
+}
+
+write.csv(maincoeftable$lgdp, "~/Thesis/Data/Main Coefficients/GDP.csv")
+write.csv(maincoeftable$lres, "~/Thesis/Data/Main Coefficients/RES.csv")
+write.csv(maincoeftable$ldef, "~/Thesis/Data/Main Coefficients/DEF.csv")
+write.csv(maincoeftable$int , "~/Thesis/Data/Main Coefficients/INT.csv")
+write.csv(maincoeftable$lhou, "~/Thesis/Data/Main Coefficients/HOU.csv")
+

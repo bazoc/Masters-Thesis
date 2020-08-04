@@ -128,16 +128,7 @@ mainlagselect <- bazfeVARselect(y = main.panel[,c("Country", "yqtr", "lgdp", "lh
                                 season = NULL,
                                 panel_identifier = c(1,2)
 )
-bazfeVARselect(y = pre.panel[,c("Country", "yqtr", "lgdp", "lhou", "lres", "ldef", "int")],
-               lag.max = 10,
-               type = "const",
-               season = NULL,
-               panel_identifier = c(1,2)
-)
-bazfeVARselect(y = post.panel,
-               lag.max = 10, 
-               season = NULL,
-               panel_identifier = c(1,2))
+
 
 write.csv(mainlagselect$criteria, "~/Thesis/Data/Lag select main.csv")
 

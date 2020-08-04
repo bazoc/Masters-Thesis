@@ -13,6 +13,7 @@ library(plm)
 library(panelvar)
 library(coda)
 library(parallel)
+library(broom)
 
 #Full years we are using
 sta.full<- 2000.25
@@ -190,7 +191,7 @@ pan1 <- merge(pan1, lres)
 pan1 <- merge(pan1, ldef)
 pan1 <- merge(pan1, lgfcf)
 pan <- merge(pan1, lint)
-pan <- pan[,c("Country", "yqtr", "lgdp", "lhou", "lres", "ldef", "int")]
+pan <- pan[,c("Country", "yqtr", "lgdp", "lres", "ldef", "int", "lhou")]
 main.panel <- pan
 exog.panel <- merge(pan, crashdummies)
 pre.panel <- filter(main.panel,
@@ -234,13 +235,13 @@ countries <- sort(countries)
 
 
 #Variable names
-var.names.main<- c("lgdp", "lhou", "lres", "ldef", "int")
+var.names.main<- c("lgdp", "lres", "ldef", "int", "lhou")
 var.names.dummy <- c(var.names.main, crashyrs)
-var.names.fancy.main <- c("Log of Real GDP ", "Log of Real House Prices", "Log of Residential Investment", "Log of GDP Deflator", "Shadow Policy Rate")
-var.names.assets <- c("lgdp", "lhou", "ldef", "lres", "vol", "lass")
+var.names.fancy.main <- c("Log of Real GDP ", "Log of Residential Investment", "Log of GDP Deflator", "Shadow Policy Rate", "Log of Real House Prices")
+var.names.assets <- c("lgdp", "ldef", "lres", "vol", "lass", "lhou")
 var.names.fancy.assets <- c("Log Real GDP ", "Log of Real House Prices","Log of GDP Deflator", "Log of Residential Investment", "Stock Market Volatility", "log of ECB Total Assets")
-var.names.full <- c("lgdp", "lhou", "ldef", "lres", "int", "vol", "lass")
-var.names.gfcf<- c("lgdp", "lhou","lgfcf", "lres", "ldef", "int")
+var.names.full <- c("lgdp", "ldef", "lres", "int", "vol", "lass", "lhou")
+var.names.gfcf<- c("lgdp", "lgfcf", "lres", "ldef", "int", "lhou")
 
 #Choleski decomposition
 #Set up the structural matrix
