@@ -132,3 +132,5 @@ write.csv(maincoeftable$ldef, "~/Thesis/Data/Main Coefficients/DEF.csv")
 write.csv(maincoeftable$int , "~/Thesis/Data/Main Coefficients/INT.csv")
 write.csv(maincoeftable$lhou, "~/Thesis/Data/Main Coefficients/HOU.csv")
 
+
+svar.main <- SVAR(fevar.main, Amat = NULL, Bmat = bmat) #Exact same as the other orthogonalised

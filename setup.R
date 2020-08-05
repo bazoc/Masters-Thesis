@@ -19,11 +19,11 @@ library(broom)
 sta.full<- 2000.25
 fin.full <- 2020
 
-#Pre recession
+#Pre recession last date
 pre.fin <- 2008
 
-#Post recession
-post.sta <- 2012
+#Post recession starting date
+post.sta <- 2012.25
 
 #Set whether VAR is in log or levels terms
 ln = T
@@ -195,7 +195,7 @@ pan <- pan[,c("Country", "yqtr", "lgdp", "lres", "ldef", "int", "lhou")]
 main.panel <- pan
 exog.panel <- merge(pan, crashdummies)
 pre.panel <- filter(main.panel,
-                    yqtr < pre.fin)
+                    yqtr <= pre.fin)
 post.panel<- filter(main.panel,
                     yqtr >= post.sta)
 gfcf.panel<- merge(main.panel, lgfcf)
@@ -245,12 +245,13 @@ var.names.gfcf<- c("lgdp", "lgfcf", "lres", "ldef", "int", "lhou")
 
 #Choleski decomposition
 #Set up the structural matrix
-amat <- diag(5)
-amat[2:5,1] <- NA
-amat[3:5,2] <- NA
-amat[4:5,3] <- NA
-amat[5,4]   <- NA
-amat
+bmat <- diag(5)
+bmat[1:5,1] <- NA
+bmat[2:5,2] <- NA
+bmat[3:5,3] <- NA
+bmat[4:5,4]   <- NA
+bmat[5,5]   <- NA
+bmat
 
 north <- c("Germany", "France", "Ireland", "Austria", "Finland", "Netherlands")
 south <- c("Greece", "Italy", "Portugal", "Spain")
