@@ -301,6 +301,8 @@ for(i in 1:length(countries)) {
                                 deparse.level = 0)
   colnames(data[[countries[i]]]) <- var.names.full
 }
+
+
 rm(list = c("pan", "pan1", "miss", "hou", "int", "lass", "ldef", "lgdp", "lhou", "lint", "lres", "lvol", "res",
             "v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8", "v9", "v10", "v11", "v12", "v13", "v14", "v15", "v16", "v17",
             "v18", "v19", "num_varmain", "endyr", "sta", "end", "stayr", "econnames", "i", "missing.countries"))
@@ -308,4 +310,5 @@ rm(list = c("pan", "pan1", "miss", "hou", "int", "lass", "ldef", "lgdp", "lhou",
 source("~/Thesis/R Code/VARselect.R")
 source("~/Thesis/R Code/grangertestcode.R")
 source("~/Thesis/R Code/fixing irf.R")
-source("~/Thesis/R Code/fixing plot(irf).R")
+source("~/Thesis/R Code/fixing plot(irf) - Singular.R")
+source("~/Thesis/R Code/fixing plot(irf) - All in one.R")
