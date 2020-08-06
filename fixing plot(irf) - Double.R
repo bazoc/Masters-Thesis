@@ -173,8 +173,9 @@ bazplotirf.double <- function (irf1 = NULL, irf2 = NULL, plot.type = c("multiple
     ifelse(is.null(sub), sub <- dp1$text2, sub <- sub)
     ifelse(is.null(ylim), ylim1 <- dp1$axisrange, ylim1 <- ylim)
     if(is.null(ylim)) {
-      ylim <- min(c(dp1$axisrange[1], dp2$axisrange[1]))
-      ylim <- c(ylim, min(c(dp1$axisrange[1], dp2$axisrange[2])))
+      mins <- apply(cbind(dp1$axisrange[,1], dp2$axisrange[,1]), 1, min)
+      maxs <- apply(cbind(dp1$axisrange[,2], dp2$axisrange[,2]), 1, max)
+      ylim <- matrix(c(mins,maxs), ncol = 2)
     }
     range1 <- range(c(x1, y1, z1))
     range2 <- range(c(x2, y2, z2))
@@ -186,14 +187,14 @@ bazplotirf.double <- function (irf1 = NULL, irf2 = NULL, plot.type = c("multiple
     par(mfrow = c(nr, nc), mar = mar.multi, oma = oma.multi, bg = "lightgray")
     if (nr > 1) {
       for (i in 1:(nvr - nc)) {
-        ifelse(is.null(ylab), ylabel <- colnames(x)[i], 
+        ifelse(is.null(ylab), ylabel <- colnames(x1)[i], 
                ylabel <- ylab[i])
         xy1 <- xy.coords(x1[, i])
         xy2 <- xy.coords(x2[, i])
         plot(xy1, axes = FALSE, type = "n", ylab = ylabel, 
-             ylim = ylim[i,], col = col[1], lty = lty[1], lwd = lwd[1], ...)
-        lines(xy1, col = col[1], lty = lty[1], lwd = lwd[1], ...)
-        lines(xy2, col = col[1], lty = lty[3], lwd = lwd[1], ...)
+             ylim = ylim[i,], ...)
+        lines(x = xy1$x, y = xy1$y, col = col[1], lty = lty[1], lwd = lwd[1], ...)
+        lines(x = xy2$x, y = xy2$y, col = col[1], lty = lty[3], lwd = lwd[1], ...)
         axis(2, at = pretty(ylim[i,])[-1])
         abline(h = 0, col = "red")
         if (!is.null(y)) 
@@ -208,9 +209,9 @@ bazplotirf.double <- function (irf1 = NULL, irf2 = NULL, plot.type = c("multiple
         xy1 <- xy.coords(x1[, j])
         xy2 <- xy.coords(x2[, j])
         plot(xy1, axes = FALSE, type = "n", ylab = ylabel, 
-             ylim = ylim[j,], col = col[1], lty = lty[1], lwd = lwd[1], ...)
-        lines(xy1, col = col[1], lty = lty[1], lwd = lwd[1], ...)
-        lines(xy2, col = col[1], lty = lty[3], lwd = lwd[1], ...)
+             ylim = ylim[j,], ...)
+        lines(x = xy1$x, y = xy1$y, col = col[1], lty = lty[1], lwd = lwd[1], ...)
+        lines(x = xy2$x, y = xy2$y, col = col[1], lty = lty[3], lwd = lwd[1], ...)
         axis(2, at = pretty(ylim[j,])[-1])
         axis(1, at = 1:(nrow(x)), labels = c(0:(nrow(x) - 
                                                   1)))
@@ -248,9 +249,9 @@ bazplotirf.double <- function (irf1 = NULL, irf2 = NULL, plot.type = c("multiple
   
   if (plot.type == "multiple") {
     for (i in 1:nvi) {
-      dp1 <- dataplot(irf1, iname = inames[i])
+      dp1 <- dataplot(x = irf1, iname = inames[i])
       dp2 <- dataplot(irf2, iname = inames[i])
-      plot.multiple(dp1, dp2, nc = nc, ...)
+      plot.multiple(dp1, dp2, nc = nc)#, ...)
       if (nvi > 1) 
         par(ask = TRUE)
     }
@@ -258,24 +259,23 @@ bazplotirf.double <- function (irf1 = NULL, irf2 = NULL, plot.type = c("multiple
 }
 bazplotirf.double(irf1 = preirf, irf2 = postirf, plot.type = "multiple", ylab = var.names.main)
 
-#irf1 <- preirf
-#irf2 <- postirf
+irf1 <- preirf
+irf2 <- postirf
 #bazplotirf(mainirfortho1, plot.type = "multiple", ylab = var_names_fancy)
 #plot(mainirfortho1, plot.type = "multiple")
 #x <- mainirfortho1
-#plot.type = c("multiple") 
-#names = NULL
-#main = NULL
-#sub = NULL
-#lty = NULL
-#lwd = NULL 
-#col = NULL
-#ylim = NULL
-#ylab = var_names_fancy
-#xlab = NULL
-
-#mar.multi = c(0,4, 0, 4)
-#oma.multi = c(6, 4, 6, 4)
-#adj.mtext = NA 
-#padj.mtext = NA
-#col.mtext = NA
+plot.type = c("multiple") 
+names = NULL
+main = NULL
+sub = NULL
+lty = NULL
+lwd = NULL 
+col = NULL
+ylim = NULL
+ylab =  NULL
+xlab = NULL
+mar.multi = c(0,4, 0, 4)
+oma.multi = c(6, 4, 6, 4)
+adj.mtext = NA 
+padj.mtext = NA
+col.mtext = NA
