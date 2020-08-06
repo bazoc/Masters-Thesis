@@ -35,10 +35,15 @@ all(names(allirfs.multiple) == names(subfolders))
 
 savelocation <- paste(mainfolder, subfolders, "/Full.png", sep = "")
 novars <- length(subfolders)
-for(j in 1:(novars)) {
+for(j in 1:(novars-1)) {
   png(savelocation[[j]], width = 800, height = 600)
-  bazplotirf.allinone(allirfs.multiple[[j]], plot.type = "multiple", ylab = var.names.fancy.main)
+  bazplotirf.allinone(allirfs.multiple[[j]], plot.type = "multiple", ylab = var.names.main)
   dev.off()
 }
+#Assets
+png(savelocation[[novars]])
+bazplotirf.allinone(allirfs.multiple[[novars]], plot.type = "multiple", ylab = var.names.assets)
+dev.off()
+
 #temp <- bazirf.varest(fevar.main, n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 3047)
 #bazplotirf.allinone(temp, plot.type = "multiple", ylab = var.names.main)
