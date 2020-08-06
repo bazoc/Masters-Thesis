@@ -1,5 +1,5 @@
-preirf <- bazirf.varest(fevar.pre, n.ahead = 40, impulse = "demeaned_int", ortho = T, ci = .95, runs = 1000, seed = 253)
-postirf <- bazirf.varest(fevar.post, n.ahead = 40, impulse = "demeaned_int", ortho = T, ci = .95, runs = 1000, seed = 253)
+#preirf <- bazirf.varest(fevar.pre, n.ahead = 40, impulse = "demeaned_int", ortho = T, ci = .95, runs = 1000, seed = 253)
+#postirf <- bazirf.varest(fevar.post, n.ahead = 40, impulse = "demeaned_int", ortho = T, ci = .95, runs = 1000, seed = 253)
 
 bazplotirf.double <- function (irf1 = NULL, irf2 = NULL, plot.type = c("multiple"), 
                         names = NULL, main = NULL, sub = NULL, lty = NULL, lwd = NULL, 
@@ -160,7 +160,7 @@ bazplotirf.double <- function (irf1 = NULL, irf2 = NULL, plot.type = c("multiple
                    range = range, text1 = text1, text2 = text2, axisrange = axisrange)
     return(result)
   }
-  plot.multiple <- function(dp, nc = nc, ...) {
+  plot.multiple <- function(dp1, dp2, nc = nc, ...) {
     x1 <- dp1$impulses
     y1 <- dp1$upper
     z1 <- dp1$lower
@@ -197,10 +197,10 @@ bazplotirf.double <- function (irf1 = NULL, irf2 = NULL, plot.type = c("multiple
         lines(x = xy2$x, y = xy2$y, col = col[1], lty = lty[3], lwd = lwd[1], ...)
         axis(2, at = pretty(ylim[i,])[-1])
         abline(h = 0, col = "red")
-        if (!is.null(y)) 
-          lines(y[, i], col = col[3], lty = lty[3], lwd = lwd[3])
-        if (!is.null(z)) 
-          lines(z[, i], col = col[3], lty = lty[3], lwd = lwd[3])
+        if (!is.null(y1)) 
+          lines(y1[, i], col = col[3], lty = lty[3], lwd = lwd[3])
+        if (!is.null(z1)) 
+          lines(z1[, i], col = col[3], lty = lty[3], lwd = lwd[3])
         box()
       }
       for (j in (nvr - nc + 1):nvr) {
@@ -213,14 +213,14 @@ bazplotirf.double <- function (irf1 = NULL, irf2 = NULL, plot.type = c("multiple
         lines(x = xy1$x, y = xy1$y, col = col[1], lty = lty[1], lwd = lwd[1], ...)
         lines(x = xy2$x, y = xy2$y, col = col[1], lty = lty[3], lwd = lwd[1], ...)
         axis(2, at = pretty(ylim[j,])[-1])
-        axis(1, at = 1:(nrow(x)), labels = c(0:(nrow(x) - 
+        axis(1, at = 1:(nrow(x1)), labels = c(0:(nrow(x1) - 
                                                   1)))
         box()
         abline(h = 0, col = "red")
-        if (!is.null(y)) 
-          lines(y[, j], col = col[3], lty = lty[3], lwd = lwd[3])
-        if (!is.null(z)) 
-          lines(z[, j], col = col[3], lty = lty[3], lwd = lwd[3])
+        if (!is.null(y1)) 
+          lines(y1[, j], col = col[3], lty = lty[3], lwd = lwd[3])
+        if (!is.null(z1)) 
+          lines(z1[, j], col = col[3], lty = lty[3], lwd = lwd[3])
       }
       mtext(main, 3, line = 2, outer = TRUE, adj = adj.mtext, 
             padj = padj.mtext, col = col.mtext, ...)
@@ -235,9 +235,9 @@ bazplotirf.double <- function (irf1 = NULL, irf2 = NULL, plot.type = c("multiple
         plot(xy, type = "l", ylab = ylabel, ylim = ylim, 
              col = col[1], lty = lty[1], lwd = lwd[1], ...)
         if (!is.null(y)) 
-          lines(y[, j], col = col[3], lty = lty[3], lwd = lwd[3])
+          lines(y1[, j], col = col[3], lty = lty[3], lwd = lwd[3])
         if (!is.null(z)) 
-          lines(z[, j], col = col[3], lty = lty[3], lwd = lwd[3])
+          lines(z1[, j], col = col[3], lty = lty[3], lwd = lwd[3])
         abline(h = 0, col = "red")
       }
       mtext(main, 3, line = 2, outer = TRUE, adj = adj.mtext, 
@@ -257,25 +257,25 @@ bazplotirf.double <- function (irf1 = NULL, irf2 = NULL, plot.type = c("multiple
     }
   }
 }
-bazplotirf.double(irf1 = preirf, irf2 = postirf, plot.type = "multiple", ylab = var.names.main)
+#bazplotirf.double(irf1 = preirf, irf2 = postirf, plot.type = "multiple", ylab = var.names.main)
 
-irf1 <- preirf
-irf2 <- postirf
+#irf1 <- preirf
+#irf2 <- postirf
 #bazplotirf(mainirfortho1, plot.type = "multiple", ylab = var_names_fancy)
 #plot(mainirfortho1, plot.type = "multiple")
 #x <- mainirfortho1
-plot.type = c("multiple") 
-names = NULL
-main = NULL
-sub = NULL
-lty = NULL
-lwd = NULL 
-col = NULL
-ylim = NULL
-ylab =  NULL
-xlab = NULL
-mar.multi = c(0,4, 0, 4)
-oma.multi = c(6, 4, 6, 4)
-adj.mtext = NA 
-padj.mtext = NA
-col.mtext = NA
+#plot.type = c("multiple") 
+#names = NULL
+#main = NULL
+#sub = NULL
+#lty = NULL
+#lwd = NULL 
+#col = NULL
+#ylim = NULL
+#ylab =  NULL
+#xlab = NULL
+#mar.multi = c(0,4, 0, 4)
+#oma.multi = c(6, 4, 6, 4)
+#adj.mtext = NA 
+#padj.mtext = NA
+#col.mtext = NA
