@@ -4,7 +4,7 @@ source("~/Thesis/R Code/FEVARs.R")
 #Options
 source("~/Thesis/R Code/Steps, Conf, Runs.R")
 
-#Options
+#IRFs
 irf.main.ortho.1 <- bazirf.varest(fevar.main, n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 253)
 irf.exog.ortho.1 <- bazirf.varest(fevar.exog, n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 7084)
 irf.pre.ortho <- bazirf.varest(fevar.pre, n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 405)
@@ -19,7 +19,7 @@ irf.assets.ortho <- bazirf.varest(fevar.assets, n.ahead = steps, ortho = T, ci =
 
 
 
-allirfs <- list(main = irf.main.ortho.1, exog = irf.exog.ortho.1, pre = irf.pre.ortho,post = irf.post.ortho, 
+allirfs.multiple <- list(main = irf.main.ortho.1, exog = irf.exog.ortho.1, pre = irf.pre.ortho,post = irf.post.ortho, 
                 maxreact = irf.maxreaction.ortho, minreact = irf.minreaction.ortho, north <- irf.north.ortho,
                 south <- irf.south.ortho, nogreece <- irf.nogreece.ortho, noireland = irf.noireland.ortho, 
                 assets = irf.assets.ortho)
@@ -30,6 +30,6 @@ savelocation <- paste(mainfolder, subfolders, "/Full", sep = "")
 novars <- length(folders)
 for(j in 1:(novars)) {
   png(savelocation[[j]])
-  bazplotirf.allinone(allirfs[[j]], plot.type = "multiple", ylab = var.names.fancy.main)
+  bazplotirf.allinone(allirfs.multiple[[j]], plot.type = "multiple", ylab = var.names.fancy.main)
   dev.off()
 }
