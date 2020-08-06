@@ -1,6 +1,6 @@
 source("~/Thesis/R Code/setup.R")
 source("~/Thesis/R Code/FEVARs.R")
-
+load(file = "~/Thesis/Data/All IRFs.Rdata")
 
 #Options
 source("~/Thesis/R Code/Steps, Conf, Runs.R")
@@ -51,11 +51,11 @@ subfolders <- c(main = "main irf", exog = "exog irf", pre =  "pre irf", post =  
                 south = "south", nogreece = "no greece", noireland = "no ireland", 
                 assets = "assets irf")
 all(names(subfolders) == names(allirfs))
-folders <- paste(mainfolder, subfolders, sep = "")
+folders <- paste(mainfolder, subfolders, ".png", sep = "")
 novars <- length(folders)
 savelocation <- list()
 for(i in 1:(novars-1)) {
-  savelocation[[i]] <- paste(folders[i], "/", var.names.main, ".png", sep = "")
+  savelocation[[i]] <- paste(folders[i], "/", var.names.main, sep = "")
 }
 savelocation[[novars]] <- paste(folders[novars], "/", var.names.assets, ".png", sep = "")
 
@@ -80,22 +80,25 @@ save(allirfs, file = "~/Thesis/Data/All IRFs.Rdata")
 ##############################################################################
 
 #Pre and post
+savelocation.prepost <- paste("~/Thesis/Figures and Graphs/Double/Pre and Post/", var.names.main, ".png", sep = "")
 for(i in 1:length(var.names.main)) {
-  png("~/Thesis/Figures and Graphs/Double/Pre and Post")
+  png(savelocation.prepost[i])
   bazplotirf.double(irf1 = allirfs[["pre"]][[i]], irf2 = allirfs[["post"]][[i]], plot.type = "multiple", ylab = var.names.fancy.main)
   dev.off()
 }
 
 #Max and min
+savelocation.maxmin <- paste("~/Thesis/Figures and Graphs/Double/Max and Min/", var.names.main, ".png", sep = "")
 for(i in 1:length(var.names.main)) {
-  png("~/Thesis/Figures and Graphs/Double/Max and Min")
+  png(savelocation.maxmin[i])
   bazplotirf.double(irf1 = allirfs[["maxreact"]][[i]], irf2 = allirfs[["minreact"]][[i]], plot.type = "multiple", ylab = var.names.fancy.main)
   dev.off()
 }
 
 #North and South
+savelocation.northsouth <- paste("~/Thesis/Figures and Graphs/Double/North and South/", var.names.main, ".png", sep = "")
 for(i in 1:length(var.names.main)) {
-  png("~/Thesis/Figures and Graphs/Double/North and South")
+  png(savelocation.northsouth[i])
   bazplotirf.double(irf1 = allirfs[["north"]][[i]], irf2 = allirfs[["south"]][[i]], plot.type = "multiple", ylab = var.names.fancy.main)
   dev.off()
 }

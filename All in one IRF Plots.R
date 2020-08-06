@@ -20,16 +20,25 @@ irf.assets.ortho <- bazirf.varest(fevar.assets, n.ahead = steps, ortho = T, ci =
 
 
 allirfs.multiple <- list(main = irf.main.ortho.1, exog = irf.exog.ortho.1, pre = irf.pre.ortho,post = irf.post.ortho, 
-                maxreact = irf.maxreaction.ortho, minreact = irf.minreaction.ortho, north <- irf.north.ortho,
-                south <- irf.south.ortho, nogreece <- irf.nogreece.ortho, noireland = irf.noireland.ortho, 
+                maxreact = irf.maxreaction.ortho, minreact = irf.minreaction.ortho, north = irf.north.ortho,
+                south = irf.south.ortho, nogreece = irf.nogreece.ortho, noireland = irf.noireland.ortho, 
                 assets = irf.assets.ortho)
+save(allirfs.multiple, file = "~/Thesis/Data/All Multiple IRFs.Rdata")
+
 
 mainfolder <- "~/Thesis/Figures and Graphs/"
-subfolders <- c("main irf", "exog irf", "pre irf", "post irf", "max react", "min react", "north", "south", "no greece", "no ireland", "assets irf")
-savelocation <- paste(mainfolder, subfolders, "/Full", sep = "")
-novars <- length(folders)
+subfolders <- c(main = "main irf", exog = "exog irf", pre =  "pre irf", post =  "post irf", 
+                maxreact = "max react", minreact = "min react", north = "north", 
+                south = "south", nogreece = "no greece", noireland = "no ireland", 
+                assets = "assets irf")
+all(names(allirfs.multiple) == names(subfolders))
+
+savelocation <- paste(mainfolder, subfolders, "/Full.png", sep = "")
+novars <- length(subfolders)
 for(j in 1:(novars)) {
-  png(savelocation[[j]])
+  png(savelocation[[j]], width = 800, height = 600)
   bazplotirf.allinone(allirfs.multiple[[j]], plot.type = "multiple", ylab = var.names.fancy.main)
   dev.off()
 }
+#temp <- bazirf.varest(fevar.main, n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 3047)
+#bazplotirf.allinone(temp, plot.type = "multiple", ylab = var.names.main)

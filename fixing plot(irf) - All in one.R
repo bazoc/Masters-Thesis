@@ -1,8 +1,8 @@
 #mainirfortho1 <- bazirf.varest(fevar.main, n.ahead = 40,impulse = "demeaned_int", ortho = T, ci = .95, runs = 1000, seed = 253)
 bazplotirf.allinone <- function (x, plot.type = c("multiple"), 
                         names = NULL, main = NULL, sub = NULL, lty = NULL, lwd = NULL, 
-                        col = NULL, ylim = NULL, ylab = NULL, xlab = NULL, nc, mar.multi = c(0, 
-                                                                                             4, 0, 4), oma.multi = c(6, 4, 6, 4), adj.mtext = NA, 
+                        col = NULL, ylim = NULL, ylab = NULL, xlab = NULL, nc, mar.multi = c(.5, 
+                                                                                             2, .5, 1), oma.multi = c(6, 5, 6, 1), adj.mtext = NA, 
                         padj.mtext = NA, col.mtext = NA, impnames = NULL, resnames = NULL, cause = NULL, ...) 
 {
   op <- par(no.readonly = TRUE)
@@ -176,53 +176,19 @@ bazplotirf.allinone <- function (x, plot.type = c("multiple"),
     #Square so number of rows also equals number of variables
     #nr <- ceiling(nvr/nc) old
     nr <- nvr
-    #par(mfrow = c(nr, nc), mar = mar.multi, oma = oma.multi, bg = "lightgray")
     
-    
-    #if (nr > 1) {
-    #for (i in 1:(nvr - nc)) {
-    #  ifelse(is.null(ylab), ylabel <- colnames(x)[i], 
-    #         ylabel <- ylab[i])
-    #  xy <- xy.coords(x[, i])
-    #  plot(xy, axes = FALSE, type = "l", ylab = ylabel, 
-    #       ylim = ylim[i,], col = col[1], lty = lty[1], lwd = lwd[1])#, ...)
-    #  axis(2, at = pretty(ylim[i,])[-1])
-    #  abline(h = 0, col = "red")
-    #  if (!is.null(y)) 
-    #    lines(y[, i], col = col[3], lty = lty[3], lwd = lwd[3])
-    #  if (!is.null(z)) 
-    #    lines(z[, i], col = col[3], lty = lty[3], lwd = lwd[3])
-    #  box()
-    #}
-    # for (j in (nvr - nc + 1):nvr) {
-    #    ifelse(is.null(ylab), ylabel <- colnames(x)[j], 
-    #           ylabel <- ylab[j])
-    #    xy <- xy.coords(x[, j])
-    #   plot(xy, axes = FALSE, type = "l", ylab = ylabel, 
-    #         ylim = ylim[j,], col = col[1], lty = lty[1], lwd = lwd[1])#, 
-    #        # ...)
-    #    axis(2, at = pretty(ylim[j,])[-1])
-    #    axis(1, at = 1:(nrow(x)), labels = c(0:(nrow(x) - 
-    #                                              1)))
-    #    box()
-    #   abline(h = 0, col = "red")
-    #    if (!is.null(y)) 
-    #      lines(y[, j], col = col[3], lty = lty[3], lwd = lwd[3])
-    #    if (!is.null(z)) 
-    #      lines(z[, j], col = col[3], lty = lty[3], lwd = lwd[3])
-    #  }
-    #  mtext(main, 3, line = 2, outer = TRUE, adj = adj.mtext, 
-    #        padj = padj.mtext, col = col.mtext)#, ...)
-    #  mtext(sub, 1, line = 4, outer = TRUE, adj = adj.mtext, 
-    #        padj = padj.mtext, col = col.mtext)#, ...)
-    #}
-    if(nvr < 100) {
-      for (j in 1:nvr) {
+    for (j in 1:nvr) {
         ifelse(is.null(ylab), ylabel <- colnames(x)[j], 
                ylabel <- ylab[j])
         xy <- xy.coords(x[, j])
-        plot(xy, type = "l", ylab = NULL, ylim = ylim[j,], 
-             col = col[1], lty = lty[1], lwd = lwd[1])#, ...)
+        plot(xy, type = "l", ylim = ylim[j,], axes = F, 
+             col = col[1], ylab = NA, lty = lty[1], lwd = lwd[1], xlab = NA)#, ...)
+        
+        axis(2, at = NULL, cex = .0001, las = 1)
+        if(graphnum == nvr) {
+          axis(1, at = NULL, cex = .0001, las = 1)
+          
+        }
         
         if (!is.null(y)) 
           lines(y[, j], col = col[3], lty = lty[3], lwd = lwd[3])
@@ -237,13 +203,12 @@ bazplotirf.allinone <- function (x, plot.type = c("multiple"),
           mtext(cause, 2, line = 3, outer = FALSE, adj = adj.mtext, 
                 padj = padj.mtext, col = col.mtext)#, ...)
         }
-        
+        box()
       }
       mtext(main, 3, line = 2, outer = TRUE, adj = adj.mtext, 
             padj = padj.mtext, col = col.mtext)#, ...)
       mtext(sub, 1, line = 4, outer = TRUE, adj = adj.mtext, 
             padj = padj.mtext, col = col.mtext)#, ...)
-    }
   }
   
   if (plot.type == "multiple") {
@@ -255,26 +220,5 @@ bazplotirf.allinone <- function (x, plot.type = c("multiple"),
     }
   }
 }
+#bazplotirf.allinone(temp, plot.type = "multiple", ylab = var.names.main)
 #dev.off()
-#bazplotirf.allinone(mainirfortho1, plot.type = "multiple", mar = c(1,1,1,1), cause = NULL, ylab = var.names.main)
-
-
-#plot(irf.main.ortho.1, plot.type = "multiple")
-#x <- irf.main.ortho.1
-#plot.type = c("multiple") 
-#names = NULL
-#main = NULL
-#sub = NULL
-#lty = NULL
-#lwd = NULL 
-#col = NULL
-#ylim = NULL
-#ylab = var.names.fancy.main
-#xlab = NULL
-
-#mar.multi = c(0,4, 0, 4)
-#oma.multi = c(6, 4, 6, 4)
-#adj.mtext = NA 
-#padj.mtext = NA
-#col.mtext = NA
-#iname = inames[i]
