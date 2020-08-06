@@ -68,6 +68,10 @@ for(i in 1:length(var.names.assets)) {
   dev.off()
 }
 
+#Save it so we can use it in double
+save(allirfs, file = "~/Thesis/Data/All IRFs.Rdata")
+
+
 tmp <- bazirf.varest(fevar.large.reaction, n.ahead = steps, impulse = "demeaned_int", ortho = T, ci = conf, runs = runs, seed = 253)
 temp <- bazirf.varest(fevar.small.reaction, n.ahead = steps, impulse = "demeaned_int", ortho = T, ci = conf, runs = runs, seed = 253)
 bazplotirf(tmp, plot.type = "multiple", ylab = var.names.fancy.main)
