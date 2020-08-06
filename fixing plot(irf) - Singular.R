@@ -1,4 +1,4 @@
-mainirfortho1 <- bazirf.varest(fevar.main, impulse = "demeaned_int", n.ahead = 40, ortho = T, ci = .95, runs = 1000, seed = 253)
+#mainirfortho1 <- bazirf.varest(fevar.main, impulse = "demeaned_int", n.ahead = 40, ortho = T, ci = .95, runs = 1000, seed = 253)
 bazplotirf <- function (x, plot.type = c("multiple"), 
           names = NULL, main = NULL, sub = NULL, lty = NULL, lwd = NULL, 
           col = NULL, ylim = NULL, ylab = NULL, xlab = NULL, nc, mar.multi = c(0, 
@@ -235,9 +235,9 @@ bazplotirf <- function (x, plot.type = c("multiple"),
     }
   }
 }
-bazplotirf(mainirfortho1, plot.type = "multiple", ylab = var.names.main)
-x <- mainirfortho1
-iname = "demeaned_int"
+#bazplotirf(mainirfortho1, plot.type = "multiple", ylab = var.names.main)
+#x <- mainirfortho1
+#iname = "demeaned_int"
 #x <- mainirfortho1
 #bazplotirf(mainirfortho1, plot.type = "multiple", ylab = var_names_fancy)
 #plot(mainirfortho1, plot.type = "multiple")
