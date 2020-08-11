@@ -222,6 +222,9 @@ bazplotirf.allinone.double <- function (irf.withci = NULL, irf.noci = NULL, plot
       if(!(j %in% differ)) {
         lines(x = xy2$x, y = xy2$y, col = col[1], lty = lty[3], lwd = lwd[1])#, ...)
       }
+      if(graphnum == nvr) {
+        axis(1, at = NULL, cex = .0001, las = 1)
+      }
       axis(2, at = NULL, cex = .0001, las = 1)
       abline(h = 0, col = "red")
       if (!is.null(y1)) 

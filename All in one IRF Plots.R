@@ -2,6 +2,8 @@ source("~/Thesis/R Code/FEVARs.R")
 
 #Options
 source("~/Thesis/R Code/Steps, Conf, Runs.R")
+width = 800
+height = 600
 
 #IRFs
 irf.main.ortho.1 <- bazirf.varest(fevar.main, n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 253)
@@ -25,6 +27,8 @@ allirfs.multiple <- list(main = irf.main.ortho.1, exog = irf.exog.ortho.1, pre =
 save(allirfs.multiple, file = "~/Thesis/Data/All Multiple IRFs.Rdata")
 
 
+
+######Single plots######
 mainfolder <- "~/Thesis/Figures and Graphs/"
 subfolders <- c(main = "main irf", exog = "exog irf", pre =  "pre irf", post =  "post irf", 
                 maxreact = "max react", minreact = "min react", north = "north", 
@@ -35,7 +39,7 @@ all(names(allirfs.multiple) == names(subfolders))
 savelocation <- paste(mainfolder, subfolders, "/Full.png", sep = "")
 novars <- length(subfolders)
 for(j in 1:(novars-1)) {
-  png(savelocation[[j]], width = 800, height = 600)
+  png(savelocation[[j]], width = width, height = height)
   bazplotirf.allinone(allirfs.multiple[[j]], plot.type = "multiple", ylab = var.names.main)
   dev.off()
 }
@@ -44,5 +48,37 @@ png(savelocation[[novars]])
 bazplotirf.allinone(allirfs.multiple[[novars]], plot.type = "multiple", ylab = var.names.assets)
 dev.off()
 
+
+
+
+
+#######2 in 1 plots###########
+#No Greece and Main
+png("~/Thesis/Figures and Graphs/no greece/2in1.png", width = width, height = height)
+bazplotirf.allinone.double(irf.withci = allirfs.multiple$nogreece, irf.noci = allirfs.multiple$main, plot.type = "multiple", ylab = var.names.main)
+dev.off()
+
+#No Ireland and Main
+png("~/Thesis/Figures and Graphs/no ireland/2in1.png", width = width, height = height)
+bazplotirf.allinone.double(irf.withci = allirfs.multiple$noireland, irf.noci = allirfs.multiple$main, plot.type = "multiple", ylab = var.names.main)
+dev.off()
+
+#Assets and Main
+png("~/Thesis/Figures and Graphs/assets irf/2in1.png", width = width, height = height)
+bazplotirf.allinone.double(irf.withci = allirfs.multiple$assets, irf.noci = allirfs.multiple$main, plot.type = "multiple", ylab = var.names.assets)
+dev.off()
+
+#2 identification schemes
+#png("~/Thesis/Figures and Graphs/ortho 2/2in1.png", width = width, height = height)
+#bazplotirf.allinone.double(irf.withci = allirfs.multiple$ortho2, irf.noci = allirfs.multiple$main, plot.type = "multiple", ylab = var.names.main)
+#dev.off()
+
+
+
+
+
+
+
+###########testing##############
 #irf.neither <- bazirf.varest(fevar.neither, n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 3047)
 #bazplotirf.allinone(irf.neither, plot.type = "multiple", ylab = var.names.main)
