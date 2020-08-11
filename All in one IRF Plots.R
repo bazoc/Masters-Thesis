@@ -1,4 +1,3 @@
-source("~/Thesis/R Code/setup.R")
 source("~/Thesis/R Code/FEVARs.R")
 
 #Options
@@ -45,5 +44,5 @@ png(savelocation[[novars]])
 bazplotirf.allinone(allirfs.multiple[[novars]], plot.type = "multiple", ylab = var.names.assets)
 dev.off()
 
-#temp <- bazirf.varest(fevar.main, n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 3047)
-#bazplotirf.allinone(temp, plot.type = "multiple", ylab = var.names.main)
+#irf.neither <- bazirf.varest(fevar.neither, n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 3047)
+#bazplotirf.allinone(irf.neither, plot.type = "multiple", ylab = var.names.main)

@@ -2,24 +2,23 @@ source("~/Thesis/R Code/setup.R")
 load("~/Thesis/Data/Sorting result.Rdata")
 
 
-#Interest rates all observations
+#####Interest rates all observations############
 fevar.main <- bazfevar(main.panel, p = laglen, type = "const")
 
-#Interest rates no crash years
+##################Interest rates no crash years####
 fevar.exog <- bazfevar(exog.panel[1:7], p = laglen, type = "const", exogen = exog.panel[8:18])
 
-#Interest rates pre recession
+################Interest rates pre recession################
 fevar.pre <- bazfevar(y = pre.panel,
                      p = laglen,
                      type = "const")
 
-#Interest rates post recession
+#################################Interest rates post recession################################
 fevar.post <- bazfevar(y = post.panel,
                      p = laglen,
                      type = "const")
 
-#Interest rates dum variable for pre and post recession
-#Interest rates post recession
+#####################Interest rates dum variable for pre and post recession########################
 exogenousdummy <- as.matrix(dum.panel[,8], ncol = 1, nrow = length(dum.panel[,8]))
 colnames(exogenousdummy) <- "dumcrash"
 fevar.dum <- bazfevar(y = dum.panel[,1:7],
@@ -27,12 +26,12 @@ fevar.dum <- bazfevar(y = dum.panel[,1:7],
                        type = "const",
                        exogen = exogenousdummy)
 
-#Central Bank Assets post recession
+############################Central Bank Assets post recession#######################################
 fevar.assets <- bazfevar(y = assets.panel,
                        p = laglen,
                        type = "const")
 
-#Sorted groups
+#############################Sorted groups###############################
 large.reaction.panel <- filter(main.panel,
                                Country %in% large.reaction.group)
 fevar.large.reaction <- bazfevar(y = large.reaction.panel,
@@ -46,7 +45,7 @@ fevar.small.reaction <- bazfevar(y = small.reaction.panel,
                                  type = "const")
 
 
-#North vs. South
+##########################North vs. South#################################
 north.panel <- filter(main.panel,
                       Country %in% north)
 fevar.north <- bazfevar(y = north.panel,
@@ -58,21 +57,31 @@ fevar.south <- bazfevar(y = south.panel,
                         p = laglen,
                         type = "const")
 
-#No Greece
+#################################No Greece############################
 nogreece.panel <- filter(main.panel,
                          Country != "Greece")
 fevar.nogreece  <- bazfevar(y = nogreece.panel,
                             p = laglen,
                             type = "const")
 
-#No Ireland
+###############################No Ireland###########################
 noireland.panel <- filter(main.panel,
                           Country != "Ireland")
 fevar.noireland <- bazfevar(y = noireland.panel,
                             p = laglen,
                             type = "const") 
 
-#Summaries
+###########################No Greece nor Ireland#################################
+neither.panel <- filter(main.panel,
+                        Country != "Ireland" & Country != "Greece")
+fevar.neither <- bazfevar(y = neither.panel,
+                            p = laglen,
+                            type = "const") 
+
+#########################Other identification####################################
+other.panel <- main.panel[,c("Country", "yqtr")]
+
+##############################Summaries##########################
 summary(fevar.main)$roots
 summary(fevar.exog)$roots
 
@@ -98,7 +107,7 @@ summary(fevar.nogreece)$roots
 summary(fevar.noireland)$roots
 #Good on all the roots
 
-#Make Coefficient table
+##########################Make Coefficient table#######################
 maincoeftable <- list()
 maincoeftable[["lgdp"]] <- tidy(fevar.main$varresult$demeaned_lgdp)
 maincoeftable[["lres"]] <- tidy(fevar.main$varresult$demeaned_lres)

@@ -39,10 +39,10 @@ intplot <- ggplot(onecountry, aes(y = `int`, x = `yqtr`)) +
   labs(x = "Year", y = "Shadow Policy Rate (%)") +
   theme_bw()
 
-volplot <- ggplot(onecountry, aes(y = `vol`, x = `yqtr`)) +
-  geom_line(size = 1) +
-  labs(x = "Year", y = "VSTOXX Index (%)") +
-  theme_bw()
+#volplot <- ggplot(onecountry, aes(y = `vol`, x = `yqtr`)) +
+#  geom_line(size = 1) +
+#  labs(x = "Year", y = "VSTOXX Index (%)") +
+#  theme_bw()
 
 assplot <- ggplot(onecountry, aes(y = `ass`, x = `yqtr`)) +
   geom_area() +
@@ -53,7 +53,7 @@ resplot
 
 png("~/Thesis/Figures and Graphs/variablesgraph.png")
 
-grid.arrange(gdpplot, houplot, defplot, resplot, intplot, volplot, assplot, nrow = 4)
+grid.arrange(gdpplot, houplot, defplot, resplot, intplot, assplot, nrow = 3)
 dev.off()
 # facet_wrap( ~ group) if i add groups so theyre on their own graphs
 

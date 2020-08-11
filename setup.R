@@ -23,7 +23,7 @@ fin.full <- 2020
 pre.fin <- 2008
 
 #Post recession starting date
-post.sta <- 2012.25
+post.sta <- 2008.25
 
 #Set whether VAR is in log or levels terms
 ln = T
@@ -190,16 +190,14 @@ pan1 <- merge(pan1, lhou)
 pan1 <- merge(pan1, lres)
 pan1 <- merge(pan1, ldef)
 pan1 <- merge(pan1, lgfcf)
-pan <- merge(pan1, lint)
-pan <- pan[,c("Country", "yqtr", "lgdp", "lres", "ldef", "int", "lhou")]
-main.panel <- pan
-exog.panel <- merge(pan, crashdummies)
+pan1 <- merge(pan1, lint)
+main.panel <- pan1[,c("Country", "yqtr", "lgdp", "lres", "ldef", "int", "lhou")]
+exog.panel <- merge(main.panel, crashdummies)
 pre.panel <- filter(main.panel,
                     yqtr <= pre.fin)
 post.panel<- filter(main.panel,
                     yqtr >= post.sta)
-gfcf.panel<- merge(main.panel, lgfcf)
-gfcf.panel <- gfcf.panel[,c("Country", "yqtr", "lgdp", "lgfcf", "lhou", "lres", "ldef", "int")]
+gfcf.panel <- pan1[,c("Country", "yqtr", "lgdp", "lgfcf", "lres", "ldef", "int", "lhou")]
 
 dum.panel <- main.panel
 dum.panel$dumcrash <- 0
@@ -209,7 +207,7 @@ for(i in 1:nrow(dum.panel)) {
   }
 }
 
-complete.panel <- main.panel
+complete.panel <- gfcf.panel
 #With CB Assets
 assets.panel <- merge(pan1, lass)
 complete.panel <- merge(complete.panel, lass)
@@ -218,7 +216,12 @@ complete.panel <- merge(complete.panel, lvol)
 #Only want post recession years
 assets.panel <- filter(assets.panel,
                        yqtr >= post.sta)
-
+#Select the variables for panel years
+assets.panel <- assets.panel[,c("Country", "yqtr", "lgdp", "lres", "ldef", "lass", "lhou")]
+  
+  
+  
+  
 #For the graphs
 pan2 <- merge(nlgdp, nlhou)
 pan2 <- merge(pan2, nlhou)
@@ -238,7 +241,7 @@ countries <- sort(countries)
 var.names.main<- c("lgdp", "lres", "ldef", "int", "lhou")
 var.names.dummy <- c(var.names.main, crashyrs)
 var.names.fancy.main <- c("Log of Real GDP ", "Log of Residential Investment", "Log of GDP Deflator", "Shadow Policy Rate", "Log of Real House Prices")
-var.names.assets <- c("lgdp", "ldef", "lres", "vol", "lass", "lhou")
+var.names.assets <- c("lgdp", "ldef", "lres", "lass", "lhou")
 var.names.fancy.assets <- c("Log Real GDP ", "Log of Real House Prices","Log of GDP Deflator", "Log of Residential Investment", "Stock Market Volatility", "log of ECB Total Assets")
 var.names.full <- c("lgdp", "ldef", "lres", "int", "vol", "lass", "lhou")
 var.names.gfcf<- c("lgdp", "lgfcf", "lres", "ldef", "int", "lhou")

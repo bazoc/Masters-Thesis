@@ -35,7 +35,7 @@ for(i in 1:5) {
   irf.nogreece.ortho[[var.names.main[i]]] <- bazirf.varest(fevar.nogreece, impulse = imp1[i], n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 4749)
   irf.noireland.ortho[[var.names.main[i]]] <- bazirf.varest(fevar.noireland, impulse = imp1[i], n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 2015)
 }
-for(i in 1:6) {
+for(i in 1:length(assets.panel)) {
   irf.assets.ortho[[var.names.assets[i]]] <- bazirf.varest(fevar.assets, impulse = imp2[i] ,n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 678)
 }
 
@@ -75,9 +75,7 @@ for(i in 1:length(var.names.assets)) {
 #Save it so we can use it in double
 save(allirfs, file = "~/Thesis/Data/All IRFs.Rdata")
 
-##############################################################################
 #####################DOUBLE GRAPHS############################################
-##############################################################################
 
 #Pre and post
 savelocation.prepost <- paste("~/Thesis/Figures and Graphs/Double/Pre and Post/", var.names.main, ".png", sep = "")
@@ -106,7 +104,7 @@ for(i in 1:length(var.names.main)) {
 
 ##################################################################################
 
-tmp <- bazirf.varest(fevar.large.reaction, n.ahead = steps, impulse = "demeaned_int", ortho = T, ci = conf, runs = runs, seed = 253)
-temp <- bazirf.varest(fevar.small.reaction, n.ahead = steps, impulse = "demeaned_int", ortho = T, ci = conf, runs = runs, seed = 253)
-bazplotirf(tmp, plot.type = "multiple", ylab = var.names.fancy.main)
-bazplotirf(temp, plot.type = "multiple", ylab = var.names.fancy.main)
+#tmp <- bazirf.varest(fevar.large.reaction, n.ahead = steps, impulse = "demeaned_int", ortho = T, ci = conf, runs = runs, seed = 253)
+#temp <- bazirf.varest(fevar.small.reaction, n.ahead = steps, impulse = "demeaned_int", ortho = T, ci = conf, runs = runs, seed = 253)
+#bazplotirf(tmp, plot.type = "multiple", ylab = var.names.fancy.main)
+#bazplotirf(temp, plot.type = "multiple", ylab = var.names.fancy.main)
