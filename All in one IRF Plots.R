@@ -73,12 +73,6 @@ dev.off()
 #bazplotirf.allinone.double(irf.withci = allirfs.multiple$ortho2, irf.noci = allirfs.multiple$main, plot.type = "multiple", ylab = var.names.main)
 #dev.off()
 
-
-
-
-
-
-
-###########testing##############
-#irf.neither <- bazirf.varest(fevar.neither, n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 3047)
-#bazplotirf.allinone(irf.neither, plot.type = "multiple", ylab = var.names.main)
+###########testing#############
+#load(file = "~/Thesis/Data/All Multiple IRFs.Rdata")
+#temp = allirfs.multiple$main
