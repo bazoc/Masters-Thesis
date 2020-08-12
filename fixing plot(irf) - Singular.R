@@ -47,7 +47,7 @@ bazplotirf <- function (x, plot.type = c("multiple"),
       nc <- ifelse(nvr > 4, 2, 1)
     }
     nr <- ceiling(nvr/nc)
-    par(mfrow = c(nr, nc), mar = mar.multi, oma = oma.multi, bg = "lightgray")
+    par(mfrow = c(nr, nc), mar = mar.multi, oma = oma.multi, bg = "white")
     if (nr > 1) {
       for (i in 1:(nvr - nc)) {
         ifelse(is.null(ylab), ylabel <- colnames(x)[i], 
@@ -117,9 +117,9 @@ bazplotirf <- function (x, plot.type = c("multiple"),
   plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
   legend('bottom',legend = c(legendbot, "95% Bootstrapped C.I. - 1000 Runs") ,col = c("black", "red"), lwd = 2, lty = c(1, 3), xpd = TRUE, cex = 1.2, seg.len=3, bty = 'n')
 }
-bazplotirf(mainirfortho1, plot.type = "multiple", ylab = var.names.main)
+#bazplotirf(mainirfortho1, plot.type = "multiple", ylab = var.names.main)
 #x <- mainirfortho1
-iname = "demeaned_lhou"
+#iname = "demeaned_lhou"
 #bazplotirf(mainirfortho1, plot.type = "multiple", ylab = var_names_fancy)
 #plot(mainirfortho1, plot.type = "multiple")
 #x <- mainirfortho1

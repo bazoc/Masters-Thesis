@@ -5,7 +5,7 @@ bazplotirf.allinone.double <- function (irf.withci = NULL, irf.noci = NULL, plot
                         names = NULL, main = NULL, sub = NULL, lty = NULL, lwd = NULL, 
                         col = NULL, ylim = NULL, ylab = NULL, xlab = NULL, nc, mar.multi = c(.5, 
                                                                                              2, .5, 1), oma.multi = c(6, 5, 6, 1), adj.mtext = NA, 
-                        padj.mtext = NA, col.mtext = NA, impnames = NULL, resnames = NULL, cause = NULL, legendbot = NULL,  ...) 
+                        padj.mtext = NA, col.mtext = NA, impnames = NULL, resnames = NULL, cause = NULL, legendbot = NULL, confon = T, ...) 
 {
   if(is.null(irf.withci) | is.null(irf.noci)) {
     stop("\nPlease provide IRFs")
@@ -17,7 +17,7 @@ bazplotirf.allinone.double <- function (irf.withci = NULL, irf.noci = NULL, plot
   rnames1 <- irf.withci$response
   inames2 <- irf.noci$impulse
   rnames2 <- irf.noci$impulse
-  ifelse(is.null(legendbot), legendbot <- c("IRF with CI", "IRF no CI"), legendbot <- legendbot)
+  ifelse(is.null(legendbot), legendbot <- c("IRF with CI", "IRF no CI", "95% CI of IRF"), legendbot <- legendbot)
   
   if(all(sort(inames1) ==sort(inames2)) & !(all(inames1 ==inames2))) { #Same variables different order
     orderinames <- order(inames1)
@@ -93,20 +93,26 @@ bazplotirf.allinone.double <- function (irf.withci = NULL, irf.noci = NULL, plot
       xy2 <- xy.coords(x2[, j])
       plot(xy1, axes = FALSE, type = "n", ylab = NA, 
            ylim = ylim[j,], xlab = NA)#, ...)
+      if(confon == T) {
+      polygon(c(xy1$x, rev(xy1$x)),
+              c(y1[ ,j],rev(z1[ ,j])),
+              col = "lightgrey", border = NA)
+      }
+      abline(h = 0, col = "red")
+      
       lines(x = xy1$x, y = xy1$y, col = col[1], lty = lty[1], lwd = lwd[1])#, ...)
       if(!(j %in% differ)) {
-        lines(x = xy2$x, y = xy2$y, col = col[1], lty = lty[3], lwd = lwd[1])#, ...)
+        lines(x = xy2$x, y = xy2$y, col = "blue", lty = lty[3], lwd = lwd[1])#, ...)
       }
       if(graphnum == nvr) {
         axis(1, at = NULL, cex = .0001, las = 1)
       }
       axis(2, at = NULL, cex = .0001, las = 1)
-      abline(h = 0, col = "red")
-      if (!is.null(y1)) 
-        lines(y1[, j], col = col[3], lty = lty[3], lwd = lwd[3])
-      if (!is.null(z1)) 
-        lines(z1[, j], col = col[3], lty = lty[3], lwd = lwd[3])
-      abline(h = 0, col = "red")
+      #if (!is.null(y1)) 
+      #  lines(y1[, j], col = col[3], lty = lty[3], lwd = lwd[3])
+      #if (!is.null(z1)) 
+      #  lines(z1[, j], col = col[3], lty = lty[3], lwd = lwd[3])
+      #abline(h = 0, col = "red")
       if(graphnum == 1) {
         mtext(ylab[j], 3, line = 1, outer = F, adj = adj.mtext, 
               padj = padj.mtext, col = col.mtext)#, ...)
@@ -146,8 +152,16 @@ bazplotirf.allinone.double <- function (irf.withci = NULL, irf.noci = NULL, plot
       ifelse(is.null(ylab), ylabel <- colnames(x)[j], 
              ylabel <- ylab[j])
       xy <- xy.coords(x[, j])
-      plot(xy, type = "l", ylim = ylim[j,], axes = F, 
+      plot(xy, type = "n", ylim = ylim[j,], axes = F, 
            col = col[1], ylab = NA, lty = lty[1], lwd = lwd[1], xlab = NA)#, ...)
+      if(confon == T) {
+      polygon(c(xy$x, rev(xy$x)),
+              c(y[ ,j],rev(z[ ,j])),
+              col = "lightgrey", border = NA)
+      }
+      abline(h = 0, col = "red")
+      lines(x = xy$x, y = xy$y, col = col[1], lty = lty[1], lwd = lwd[1])#, ...)
+      
       
       axis(2, at = NULL, cex = .0001, las = 1)
       if(graphnum == nvr) {
@@ -155,11 +169,10 @@ bazplotirf.allinone.double <- function (irf.withci = NULL, irf.noci = NULL, plot
         
       }
       
-      if (!is.null(y)) 
-        lines(y[, j], col = col[3], lty = lty[3], lwd = lwd[3])
-      if (!is.null(z)) 
-        lines(z[, j], col = col[3], lty = lty[3], lwd = lwd[3])
-      abline(h = 0, col = "red")
+      #if (!is.null(y)) 
+      #  lines(y[, j], col = col[3], lty = lty[3], lwd = lwd[3])
+      #if (!is.null(z)) 
+      #  lines(z[, j], col = col[3], lty = lty[3], lwd = lwd[3])
       if(graphnum == 1) {
         mtext(ylab[j], 3, line = 1, outer = F, adj = adj.mtext, 
               padj = padj.mtext, col = col.mtext)#, ...)
@@ -177,7 +190,7 @@ bazplotirf.allinone.double <- function (irf.withci = NULL, irf.noci = NULL, plot
   }
   
   if (plot.type == "multiple") {
-    par(mfrow = c(nvr, nvi), mar = mar.multi, oma = oma.multi, bg = "lightgray")
+    par(mfrow = c(nvr, nvi), mar = mar.multi, oma = oma.multi, bg = "white")
     differ = which(inames1 != inames2)
     for (i in 1:nvi) {
       if(!(i %in% differ)) {
@@ -195,10 +208,11 @@ bazplotirf.allinone.double <- function (irf.withci = NULL, irf.noci = NULL, plot
   }
   par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
   plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
-  legend('bottom',legend = c(legendbot, "95% Bootstrapped C.I. - 1000 Runs") ,col = c("black", "black", "red"), lwd = 2, lty = c(1, 3, 3), xpd = TRUE, cex = 1.2, seg.len=3, bty = 'n')
+  legend('bottom',legend = c(legendbot) ,col = c("black", "blue", "grey"), 
+         lwd = 2, lty = c(1, 3, -1), pch = c(-1, -1, 15), xpd = TRUE, cex = 1.2, seg.len=3, bty = 'n')
 }
 #bazplotirf.allinone.double(irf.withci = allirfs.multiple$assets, irf.noci = allirfs.multiple$main, plot.type = "multiple", 
-#                           ylab = var.names.assets.graph, main = "poodidyscoop")
+#                           ylab = var.names.assets.graph, main = "poodidyscoop", lwd = 1.9)
 #dev.off()
 #load(file = "~/Thesis/Data/All Multiple IRFs.Rdata")
 #irf.withci = allirfs.multiple$nogreece

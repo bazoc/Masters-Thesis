@@ -15,7 +15,7 @@ bazplotirf.double <- function (irf.withci = NULL, irf.noci = NULL, plot.type = c
   plot.type <- match.arg(plot.type)
   inames <- irf.withci$impulse
   rnames <- irf.withci$response
-  ifelse(is.null(legendbot), legendbot <- c("IRF with CI", "IRF no CI", "95% Bootstrapped C.I. - 1000 Runs"), legendbot <- legendbot)
+  ifelse(is.null(legendbot), legendbot <- c("IRF with CI", "IRF no CI"), legendbot <- legendbot)
   
   if (is.null(names)) {
     names <- inames
@@ -63,7 +63,7 @@ bazplotirf.double <- function (irf.withci = NULL, irf.noci = NULL, plot.type = c
       nc <- ifelse(nvr > 4, 2, 1)
     }
     nr <- ceiling(nvr/nc)
-    par(mfrow = c(nr, nc), mar = mar.multi, oma = oma.multi, bg = "lightgray")
+    par(mfrow = c(nr, nc), mar = mar.multi, oma = oma.multi, bg = "white")
     if (nr > 1) {
       for (i in 1:(nvr - nc)) {
         ifelse(is.null(ylab), ylabel <- colnames(x1)[i], 
@@ -72,14 +72,21 @@ bazplotirf.double <- function (irf.withci = NULL, irf.noci = NULL, plot.type = c
         xy2 <- xy.coords(x2[, i])
         plot(xy1, axes = FALSE, type = "n", ylab = ylabel, 
              ylim = ylim[i,], ...)
-        lines(x = xy1$x, y = xy1$y, col = col[1], lty = lty[1], lwd = lwd[1], ...)
-        lines(x = xy2$x, y = xy2$y, col = col[1], lty = lty[3], lwd = lwd[1], ...)
+        
         axis(2, at = pretty(ylim[i,])[-1], las = 1)
+        polygon(c(xy1$x, rev(xy1$x)),
+                c(y1[ ,i],rev(z1[ ,i])),
+                col = "lightgrey", border = NA)
         abline(h = 0, col = "red")
-        if (!is.null(y1)) 
-          lines(y1[, i], col = col[3], lty = lty[3], lwd = lwd[3])
-        if (!is.null(z1)) 
-          lines(z1[, i], col = col[3], lty = lty[3], lwd = lwd[3])
+        
+        lines(x = xy1$x, y = xy1$y, col = col[1], lty = lty[1], lwd = lwd[1], ...)
+        lines(x = xy2$x, y = xy2$y, col = "blue", lty = lty[3], lwd = lwd[1], ...)
+        axis(2, at = pretty(ylim[i,])[-1], las = 1)
+
+        #if (!is.null(y1)) 
+        #  lines(y1[, i], col = col[3], lty = lty[3], lwd = lwd[3])
+        #if (!is.null(z1)) 
+        #  lines(z1[, i], col = col[3], lty = lty[3], lwd = lwd[3])
         box()
       }
       for (j in (nvr - nc + 1):nvr) {
@@ -89,16 +96,20 @@ bazplotirf.double <- function (irf.withci = NULL, irf.noci = NULL, plot.type = c
         xy2 <- xy.coords(x2[, j])
         plot(xy1, axes = FALSE, type = "n", ylab = ylabel, 
              ylim = ylim[j,], ...)
+        polygon(c(xy1$x, rev(xy1$x)),
+                c(y1[ ,j],rev(z1[ ,j])),
+                col = "lightgrey", border = NA)
+        abline(h = 0, col = "red")
+        
         lines(x = xy1$x, y = xy1$y, col = col[1], lty = lty[1], lwd = lwd[1], ...)
-        lines(x = xy2$x, y = xy2$y, col = col[1], lty = lty[3], lwd = lwd[1], ...)
+        lines(x = xy2$x, y = xy2$y, col = "blue", lty = lty[3], lwd = lwd[1], ...)
         axis(2, at = pretty(ylim[j,])[-1], las = 1)
         axis(1, at = NULL)
         box()
-        abline(h = 0, col = "red")
-        if (!is.null(y1)) 
-          lines(y1[, j], col = col[3], lty = lty[3], lwd = lwd[3])
-        if (!is.null(z1)) 
-          lines(z1[, j], col = col[3], lty = lty[3], lwd = lwd[3])
+        #if (!is.null(y1)) 
+        #  lines(y1[, j], col = col[3], lty = lty[3], lwd = lwd[3])
+        #if (!is.null(z1)) 
+        #  lines(z1[, j], col = col[3], lty = lty[3], lwd = lwd[3])
       }
       mtext(main, 3, line = 2, outer = TRUE, adj = adj.mtext, 
             padj = padj.mtext, col = col.mtext, ...)
@@ -136,10 +147,10 @@ bazplotirf.double <- function (irf.withci = NULL, irf.noci = NULL, plot.type = c
   }
   par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
   plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
-  legend('bottom',legend = c(legendbot) ,col = c("black", "black", "red"), lwd = 2, lty = c(1, 3, 3), xpd = TRUE, cex = 1.2, seg.len=3, bty = 'n')
+  legend('bottom',legend = c(legendbot) ,col = c("black", "blue"), lwd = 2, lty = c(1, 3), xpd = TRUE, cex = 1.2, seg.len=3, bty = 'n')
 }
 #bazplotirf.double(irf.withci = preirf, irf.noci = postirf, plot.type = "multiple", ylab = var.names.main,
-#                  legendbot = c("first", "second"))
+#                  legendbot = c("first", "second"), lwd = 2)
 
 #irf.withci <- preirf
 #irf.noci <- postirf

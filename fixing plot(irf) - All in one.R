@@ -1,4 +1,4 @@
-#mainirfortho1 <- bazirf.varest(fevar.main, n.ahead = 40,impulse = "demeaned_int", ortho = T, ci = .95, runs = 1000, seed = 253)
+#mainirfortho1 <- bazirf.varest(fevar.main, n.ahead = 20,impulse = "demeaned_int", ortho = T, ci = .95, runs = 1000, seed = 253)
 bazplotirf.allinone <- function (x, plot.type = c("multiple"), 
                         names = NULL, main = NULL, sub = NULL, lty = NULL, lwd = NULL, 
                         col = NULL, ylim = NULL, ylab = NULL, xlab = NULL, nc, mar.multi = c(.5, 
@@ -58,8 +58,10 @@ bazplotirf.allinone <- function (x, plot.type = c("multiple"),
         ifelse(is.null(ylab), ylabel <- colnames(x)[j], 
                ylabel <- ylab[j])
         xy <- xy.coords(x[, j])
-        plot(xy, type = "l", ylim = ylim[j,], axes = F, 
+        plot(xy, type = "n", ylim = ylim[j,], axes = F, 
              col = col[1], ylab = NA, lty = lty[1], lwd = lwd[1], xlab = NA)#, ...)
+        abline(h = 0, col = "red")
+        lines(x = xy$x, y = xy$y, col = col[1], lty = lty[1], lwd = lwd[1], ...)
         
         axis(2, at = NULL, cex = .0001, las = 1)
         if(graphnum == nvr) {
@@ -71,7 +73,6 @@ bazplotirf.allinone <- function (x, plot.type = c("multiple"),
           lines(y[, j], col = col[3], lty = lty[3], lwd = lwd[3])
         if (!is.null(z)) 
           lines(z[, j], col = col[3], lty = lty[3], lwd = lwd[3])
-        abline(h = 0, col = "red")
         if(graphnum == 1) {
           mtext(ylab[j], 3, line = 1, outer = F, adj = adj.mtext, 
                 padj = padj.mtext, col = col.mtext)#, ...)
@@ -89,7 +90,7 @@ bazplotirf.allinone <- function (x, plot.type = c("multiple"),
   }
   
   if (plot.type == "multiple") {
-    par(mfrow = c(nvr, nvi), mar = mar.multi, oma = oma.multi, bg = "lightgray")
+    par(mfrow = c(nvr, nvi), mar = mar.multi, oma = oma.multi, bg = "white")
     for (i in 1:nvi) {
       dp <- dataplot(x, iname = inames[i])
       graphnum = i
@@ -100,5 +101,5 @@ bazplotirf.allinone <- function (x, plot.type = c("multiple"),
   plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
   legend('bottom',legend = c(legendbot, "95% Bootstrapped C.I. - 1000 Runs") ,col = c("black", "red"), lwd = 2, lty = c(1, 3), xpd = TRUE, cex = 1.2, seg.len=3, bty = 'n')
 }
-bazplotirf.allinone(temp, plot.type = "multiple", ylab = var.names.main)
+#bazplotirf.allinone(temp, plot.type = "multiple", ylab = var.names.main, lwd = 1.6)
 #dev.off()
