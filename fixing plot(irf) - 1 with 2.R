@@ -5,7 +5,7 @@ bazplotirf.allinone.double <- function (irf.withci = NULL, irf.noci = NULL, plot
                         names = NULL, main = NULL, sub = NULL, lty = NULL, lwd = NULL, 
                         col = NULL, ylim = NULL, ylab = NULL, xlab = NULL, nc, mar.multi = c(.5, 
                                                                                              2, .5, 1), oma.multi = c(6, 5, 6, 1), adj.mtext = NA, 
-                        padj.mtext = NA, col.mtext = NA, impnames = NULL, resnames = NULL, cause = NULL, ...) 
+                        padj.mtext = NA, col.mtext = NA, impnames = NULL, resnames = NULL, cause = NULL, legendbot = NULL,  ...) 
 {
   if(is.null(irf.withci) | is.null(irf.noci)) {
     stop("\nPlease provide IRFs")
@@ -17,6 +17,7 @@ bazplotirf.allinone.double <- function (irf.withci = NULL, irf.noci = NULL, plot
   rnames1 <- irf.withci$response
   inames2 <- irf.noci$impulse
   rnames2 <- irf.noci$impulse
+  ifelse(is.null(legendbot), legendbot <- c("IRF with CI", "IRF no CI"), legendbot <- legendbot)
   
   if(all(sort(inames1) ==sort(inames2)) & !(all(inames1 ==inames2))) { #Same variables different order
     orderinames <- order(inames1)
@@ -118,8 +119,8 @@ bazplotirf.allinone.double <- function (irf.withci = NULL, irf.noci = NULL, plot
       }
       mtext(main, 3, line = 2, outer = TRUE, adj = adj.mtext, 
             padj = padj.mtext, col = col.mtext)#, ...)
-      mtext(sub, 1, line = 4, outer = TRUE, adj = adj.mtext, 
-            padj = padj.mtext, col = col.mtext)#, ...)
+      #mtext(sub, 1, line = 4, outer = TRUE, adj = adj.mtext, 
+      #      padj = padj.mtext, col = col.mtext)#, ...)
   }
   plot.multiple.single <- function(dp, nc = nc, ...) {
     x <- dp$impulses
@@ -171,8 +172,8 @@ bazplotirf.allinone.double <- function (irf.withci = NULL, irf.noci = NULL, plot
     }
     mtext(main, 3, line = 2, outer = TRUE, adj = adj.mtext, 
           padj = padj.mtext, col = col.mtext)#, ...)
-    mtext(sub, 1, line = 4, outer = TRUE, adj = adj.mtext, 
-          padj = padj.mtext, col = col.mtext)#, ...)
+    #mtext(sub, 1, line = 4, outer = TRUE, adj = adj.mtext, 
+    #      padj = padj.mtext, col = col.mtext)#, ...)
   }
   
   if (plot.type == "multiple") {
@@ -192,8 +193,12 @@ bazplotirf.allinone.double <- function (irf.withci = NULL, irf.noci = NULL, plot
       }
     }
   }
+  par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+  plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
+  legend('bottom',legend = c(legendbot, "95% Bootstrapped C.I. - 1000 Runs") ,col = c("black", "black", "red"), lwd = 2, lty = c(1, 3, 3), xpd = TRUE, cex = 1.2, seg.len=3, bty = 'n')
 }
-#bazplotirf.allinone.double(irf.withci = allirfs.multiple$assets, irf.noci = allirfs.multiple$main, plot.type = "multiple", ylab = var.names.assets)
+#bazplotirf.allinone.double(irf.withci = allirfs.multiple$assets, irf.noci = allirfs.multiple$main, plot.type = "multiple", 
+#                           ylab = var.names.assets.graph, main = "poodidyscoop")
 #dev.off()
 #load(file = "~/Thesis/Data/All Multiple IRFs.Rdata")
 #irf.withci = allirfs.multiple$nogreece

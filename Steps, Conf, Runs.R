@@ -2,3 +2,5 @@
 steps <- 20
 conf <- .95
 runs <- 1000
+var.names.main.graph <- c("GDP", "RES", "DEF", "INT", "HOU")
+var.names.assets.graph<- c("GDP", "RES", "DEF", "ASS", "HOU")

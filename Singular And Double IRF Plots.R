@@ -62,13 +62,13 @@ savelocation[[novars]] <- paste(folders[novars], "/", var.names.assets, ".png", 
 for(j in 1:(novars-1)) {
   for(i in 1:length(var.names.main)) {
     png(savelocation[[j]][i])
-    bazplotirf(allirfs[[j]][[i]], plot.type = "multiple", ylab = var.names.fancy.main)
+    bazplotirf(allirfs[[j]][[i]], plot.type = "multiple", ylab = var.names.main.graph, legendbot = "Impulse Response")
     dev.off()
   }
 }
 for(i in 1:length(var.names.assets)) {
   png(savelocation[[novars]][[i]])
-  bazplotirf(allirfs[[novars]][[i]], plot.type = "multiple", ylab = var.names.fancy.main)
+  bazplotirf(allirfs[[novars]][[i]], plot.type = "multiple", ylab = var.names.assets.graph, legendbot = "Impulse Response")
   dev.off()
 }
 
@@ -78,31 +78,47 @@ save(allirfs, file = "~/Thesis/Data/All IRFs.Rdata")
 #####################DOUBLE GRAPHS############################################
 
 #Pre and post
+maintitleprepost <- paste("Orthogonal Impulse Response for Pre and Post Crisis VARs from", var.names.main.graph, sep = " ")
 savelocation.prepost <- paste("~/Thesis/Figures and Graphs/Double/Pre and Post/", var.names.main, ".png", sep = "")
 for(i in 1:length(var.names.main)) {
   png(savelocation.prepost[i])
-  bazplotirf.double(irf1 = allirfs[["pre"]][[i]], irf2 = allirfs[["post"]][[i]], plot.type = "multiple", ylab = var.names.fancy.main)
+  bazplotirf.double(irf.withci =  allirfs[["pre"]][[i]], irf.noci = allirfs[["post"]][[i]], plot.type = "multiple", 
+                    ylab = var.names.main.graph, main = maintitleprepost[i],
+                    legendbot = c("Impulse Response for Pre Crisis VAR", "Impulse Response for Post Crisis VAR",
+                                  "95% Boorstrapped C.I. - 1000 Runs for Pre Crisis VAR"))
   dev.off()
 }
 
 #Max and min
+maintitlemaxmin <-   paste("Orthogonal Impulse Response for Strong and Weak Reaction Groups from", var.names.main.graph, sep = " ")
 savelocation.maxmin <- paste("~/Thesis/Figures and Graphs/Double/Max and Min/", var.names.main, ".png", sep = "")
 for(i in 1:length(var.names.main)) {
   png(savelocation.maxmin[i])
-  bazplotirf.double(irf1 = allirfs[["maxreact"]][[i]], irf2 = allirfs[["minreact"]][[i]], plot.type = "multiple", ylab = var.names.fancy.main)
+  bazplotirf.double(irf.withci = allirfs[["maxreact"]][[i]], irf.noci = allirfs[["minreact"]][[i]], plot.type = "multiple", 
+                    ylab = var.names.main.graph, 
+                    legendbot = c("Impulse Response for Strong Reaction Group", "Impulse Response for Weak Reaction Group",
+                                  "95% Boorstrapped C.I. - 1000 Runs for Strong Reaction Group"), 
+                    main = maintitlemaxmin[i])
   dev.off()
 }
 
 #North and South
 savelocation.northsouth <- paste("~/Thesis/Figures and Graphs/Double/North and South/", var.names.main, ".png", sep = "")
+maintitlenorthsouth <-  paste("Orthogonal Impulse Response for Northern and Southern Groups from", var.names.main.graph, sep = " ")
+
 for(i in 1:length(var.names.main)) {
   png(savelocation.northsouth[i])
-  bazplotirf.double(irf1 = allirfs[["north"]][[i]], irf2 = allirfs[["south"]][[i]], plot.type = "multiple", ylab = var.names.fancy.main)
+  bazplotirf.double(irf.withci = allirfs[["north"]][[i]], irf.noci = allirfs[["south"]][[i]], plot.type = "multiple", 
+                    ylab = var.names.main.graph, 
+                    legendbot = c("Impulse Response for Northern Group", "Impulse Response for Southern Group",
+                                  "95% Boorstrapped C.I. - 1000 Runs for Northern Group"), 
+                    main = maintitlenorthsouth[i])
   dev.off()
 }
 
 
 ##################################################################################
+#load(file = "~/Thesis/Data/All IRFs.Rdata")
 
 #tmp <- bazirf.varest(fevar.large.reaction, n.ahead = steps, impulse = "demeaned_int", ortho = T, ci = conf, runs = runs, seed = 253)
 #temp <- bazirf.varest(fevar.small.reaction, n.ahead = steps, impulse = "demeaned_int", ortho = T, ci = conf, runs = runs, seed = 253)

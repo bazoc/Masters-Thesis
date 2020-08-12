@@ -3,13 +3,15 @@ bazplotirf.allinone <- function (x, plot.type = c("multiple"),
                         names = NULL, main = NULL, sub = NULL, lty = NULL, lwd = NULL, 
                         col = NULL, ylim = NULL, ylab = NULL, xlab = NULL, nc, mar.multi = c(.5, 
                                                                                              2, .5, 1), oma.multi = c(6, 5, 6, 1), adj.mtext = NA, 
-                        padj.mtext = NA, col.mtext = NA, impnames = NULL, resnames = NULL, cause = NULL, ...) 
+                        padj.mtext = NA, col.mtext = NA, impnames = NULL, resnames = NULL, cause = NULL, legendbot = NULL,...) 
 {
   op <- par(no.readonly = TRUE)
   on.exit(par(op))
   plot.type <- match.arg(plot.type)
   inames <- x$impulse
   rnames <- x$response
+  ifelse(is.null(legendbot), legendbot <- c("IRF"), legendbot <- legendbot)
+  
   if (is.null(names)) {
     names <- inames
   }
@@ -82,8 +84,8 @@ bazplotirf.allinone <- function (x, plot.type = c("multiple"),
       }
       mtext(main, 3, line = 2, outer = TRUE, adj = adj.mtext, 
             padj = padj.mtext, col = col.mtext)#, ...)
-      mtext(sub, 1, line = 4, outer = TRUE, adj = adj.mtext, 
-            padj = padj.mtext, col = col.mtext)#, ...)
+      #mtext(sub, 1, line = 4, outer = TRUE, adj = adj.mtext, 
+      #      padj = padj.mtext, col = col.mtext)#, ...)
   }
   
   if (plot.type == "multiple") {
@@ -94,6 +96,9 @@ bazplotirf.allinone <- function (x, plot.type = c("multiple"),
       plot.multiple(dp, nc = nc, graphnum = graphnum, cause = cause, ylab = ylab, ...)
     }
   }
+  par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+  plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
+  legend('bottom',legend = c(legendbot, "95% Bootstrapped C.I. - 1000 Runs") ,col = c("black", "red"), lwd = 2, lty = c(1, 3), xpd = TRUE, cex = 1.2, seg.len=3, bty = 'n')
 }
-#bazplotirf.allinone(temp, plot.type = "multiple", ylab = var.names.main)
+bazplotirf.allinone(temp, plot.type = "multiple", ylab = var.names.main)
 #dev.off()
