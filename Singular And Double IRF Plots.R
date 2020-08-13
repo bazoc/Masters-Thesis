@@ -1,4 +1,6 @@
 load(file = "~/Thesis/Data/All IRFs.Rdata")
+#Options
+source("~/Thesis/R Code/Steps, Conf, Runs.R")
 
 mainfolder <- "~/Thesis/Figures and Graphs/"
 subfolders <- c(main = "main irf", exog = "exog irf", pre =  "pre irf", post =  "post irf", 

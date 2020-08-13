@@ -25,17 +25,23 @@ for(i in 1:5) {
   irf.exog.ortho.1[[var.names.main[i]]] <- bazirf.varest(fevar.exog, impulse = imp1[i], n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 7084)
   irf.pre.ortho[[var.names.main[i]]] <- bazirf.varest(fevar.pre, impulse = imp1[i], n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 405)
   irf.post.ortho[[var.names.main[i]]] <- bazirf.varest(fevar.post, impulse = imp1[i], n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 195)
-  irf.maxreaction.ortho[[var.names.main[i]]] <- bazirf.varest(fevar.large.reaction, impulse = imp1[i], n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 7540)
-  irf.minreaction.ortho[[var.names.main[i]]] <- bazirf.varest(fevar.small.reaction, impulse = imp1[i], n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 3047)
   irf.north.ortho[[var.names.main[i]]] <- bazirf.varest(fevar.north, impulse = imp1[i], n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 129)
   irf.south.ortho[[var.names.main[i]]] <- bazirf.varest(fevar.south, impulse = imp1[i], n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 3524)
   irf.nogreece.ortho[[var.names.main[i]]] <- bazirf.varest(fevar.nogreece, impulse = imp1[i], n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 4749)
   irf.noireland.ortho[[var.names.main[i]]] <- bazirf.varest(fevar.noireland, impulse = imp1[i], n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 2015)
 }
+
+for(i in 1:5) {
+  irf.maxreaction.ortho[[var.names.main[i]]] <- bazirf.varest(fevar.large.reaction, impulse = imp1[i], n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 7540)
+  irf.minreaction.ortho[[var.names.main[i]]] <- bazirf.varest(fevar.small.reaction, impulse = imp1[i], n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 3047)
+}
+
 for(i in 1:length(var.names.assets)) {
   irf.assets.ortho[[var.names.assets[i]]] <- bazirf.varest(fevar.assets, impulse = imp2[i] ,n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 678)
 }
 
+#allirfs.notnormal$maxreact <- irf.maxreaction.ortho
+#allirfs.notnormal$minreact <- irf.minreaction.ortho
 
 allirfs.notnormal <- list(main = irf.main.ortho.1, exog = irf.exog.ortho.1, pre = irf.pre.ortho,post = irf.post.ortho, 
                 maxreact = irf.maxreaction.ortho, minreact = irf.minreaction.ortho, north = irf.north.ortho,
@@ -58,7 +64,8 @@ irf.nogreece.ortho <- bazirf.varest(fevar.nogreece, n.ahead = steps, ortho = T, 
 irf.noireland.ortho <- bazirf.varest(fevar.noireland, n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 2015)
 irf.assets.ortho <- bazirf.varest(fevar.assets, n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 678)
 
-
+#allirfs.multiple.notnormal$maxreact <- irf.maxreaction.ortho
+#allirfs.multiple.notnormal$minreact <- irf.minreaction.ortho
 
 allirfs.multiple.notnormal <- list(main = irf.main.ortho.1, exog = irf.exog.ortho.1, pre = irf.pre.ortho,post = irf.post.ortho, 
                          maxreact = irf.maxreaction.ortho, minreact = irf.minreaction.ortho, north = irf.north.ortho,

@@ -4,8 +4,15 @@ library(panelvar)
 library(PEIP)
 library(tolerance)
 
+temp <- bazirf.varest(fevar.main, impulse = "demeaned_int", n.ahead = 50, ortho = T, ci = .95, runs = 1000, seed = 253)
+bazplotirf(temp, plot.type = "multiple", legendbot = "Impulse Response", lwd = 1.5)
+
 #Numbet of periods ahead to assess at
-q = 4
+q = 12
+
+allqs <- list()
+for(i in c(4,8,12,16,20,24,28)) {
+q = 24
 minncountries <- 3 #The minimum number of countries in a group
 #10 countries, possibly up to ~14
 #Minimum 3 countries in each group
@@ -65,8 +72,14 @@ for(i in 1:length(totcombos)) {
   current.irf1 <- oirf(current.model1, n.ahead = q)
   current.irf2 <- oirf(current.model2, n.ahead = q)
   
-  s1 <- current.irf1[["int"]][,"lhou"]
-  s2 <- current.irf2[["int"]][,"lhou"]
+  current.irf1n <- current.irf1
+  current.irf2n <- current.irf2
+  
+  current.irf1n$int <- current.irf1$int / current.irf1$int[1,"int"]
+  current.irf2n$int <- current.irf2$int / current.irf2$int[1,"int"]
+  
+  s1 <- current.irf1n[["int"]][,"lhou"]
+  s2 <- current.irf2n[["int"]][,"lhou"]
   
   S1 <- sum(s1)
   S2 <- sum(s2)
@@ -125,5 +138,17 @@ countorder <- rownames(countfreq)
 countorder <- countorder[order(countfreq)]
 small.reaction.group <- countorder[1:5]
 large.reaction.group <- countorder[6:10]
+carq <- paste(q)
+allqs[[carq]] <- list(quants = quants, sorttable = sorttable, countfreq = countfreq, small.reaction.group = small.reaction.group, large.reaction.group = large.reaction.group)
+}
 
-save(small.reaction.group, large.reaction.group, quants = quants, sorttable, file = "~/Thesis/Data/Sorting result.Rdata")
+
+sort(allqs$`4`$large.reaction.group)
+sort(allqs$`8`$large.reaction.group)
+sort(allqs$`12`$large.reaction.group)
+sort(allqs$`16`$large.reaction.group)
+sort(allqs$`20`$large.reaction.group)
+sort(allqs$`24`$large.reaction.group)
+sort(allqs$`28`$large.reaction.group)
+
+save(allqs , file = "~/Thesis/Data/Sorting result.Rdata")

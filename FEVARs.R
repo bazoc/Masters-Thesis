@@ -33,13 +33,13 @@ fevar.assets <- bazfevar(y = assets.panel,
 
 #############################Sorted groups###############################
 large.reaction.panel <- filter(main.panel,
-                               Country %in% large.reaction.group)
+                               Country %in% allqs$`24`$large.reaction.group)
 fevar.large.reaction <- bazfevar(y = large.reaction.panel,
                                  p = laglen,
                                  type = "const")
 
 small.reaction.panel <- filter(main.panel,
-                               Country %in% small.reaction.group)
+                               Country %in% allqs$`24`$small.reaction.group)
 fevar.small.reaction <- bazfevar(y = small.reaction.panel,
                                  p = laglen,
                                  type = "const")

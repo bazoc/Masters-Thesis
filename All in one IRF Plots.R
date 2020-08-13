@@ -1,5 +1,3 @@
-source("~/Thesis/R Code/FEVARs.R")
-
 #Options
 source("~/Thesis/R Code/Steps, Conf, Runs.R")
 width = 800
