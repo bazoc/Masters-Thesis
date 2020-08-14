@@ -31,11 +31,13 @@ imfmort <- c("Austria" = 0.31,
              "Netherlands" = 0.71,
              "Portugal" = NA,
              "Spain" = 0.4)
+setEPS()
+postscript("~/Thesis/Figures and Graphs/strongimfmort.eps")
 
 plot(x = imfmort, 
      y = countfreq, 
      type = "n",
-     ylab = "Frequency pf times in Strong Reaction Group",
+     ylab = "Frequency of times in Strong Reaction Group",
      xlab = "IMF Mortgage Market Index",
      xlim = c(0,1))
 points(x = imfmort, 
@@ -45,39 +47,42 @@ points(x = imfmort,
        cex = 1)
 abline(lm(countfreq ~ imfmort), col = "red", lwd = 2)
 mtext("Comparison of Strong Reaction Group and IMF Mortgage Market Index", 3, line = 1, outer = F, cex = 1.2)
-namen <- names(allqs)
-larrect.var <- list()
-smlrect.var <- list()
-for(i in 1:length(namen)) {
-large.reaction.panel <- filter(main.panel,
-                               Country %in% allqs[[namen[i]]]$large.reaction.group)
-larrect.var[[namen[i]]] <- bazfevar(y = large.reaction.panel,
-                                 p = laglen,
-                                 type = "const")
+dev.off()
 
+#
+#namen <- names(allqs)
+#larrect.var <- list()
+#smlrect.var <- list()
+#for(i in 1:length(namen)) {
+#large.reaction.panel <- filter(main.panel,
+#                               Country %in% allqs[[namen[i]]]$large.reaction.group)
+#larrect.var[[namen[i]]] <- bazfevar(y = large.reaction.panel,
+#                                 p = laglen,
+ #                                type = "const")
+#
+##
+#small.reaction.panel <- filter(main.panel,
+#                               Country %in% allqs[[namen[i]]]$small.reaction.group)
+#smlrect.var[[namen[i]]] <- bazfevar(y = small.reaction.panel,
+#                                 p = laglen,
+#                                 type = "const")
+#}
 
-small.reaction.panel <- filter(main.panel,
-                               Country %in% allqs[[namen[i]]]$small.reaction.group)
-smlrect.var[[namen[i]]] <- bazfevar(y = small.reaction.panel,
-                                 p = laglen,
-                                 type = "const")
-}
-
-imp = c("demeaned_int", "demeaned_lhou")
-larrect.irf <- list()
-smlrect.irf <- list()
-for(j in 1:length(namen)) {
-  for(i in 1:2) {
-    larrect.irf[[namen[j]]][[imp[i]]] <- bazirf.varest(larrect.var[[j]], impulse = imp[i], n.ahead = steps, ortho = T, ci = conf, runs = 100, seed = 7540)
-    smlrect.irf[[namen[j]]][[imp[i]]] <- bazirf.varest(smlrect.var[[j]], impulse = imp[i], n.ahead = steps, ortho = T, ci = conf, runs = 100, seed = 3047)
-  }
-}
-num = "24"
-bazplotirf.double(irf.withci = larrect.irf[[num]][[1]], irf.noci = smlrect.irf[[num]][[1]], plot.type = "multiple", 
-                  ylab = var.names.main.graph, 
-                  legendbot = c("Impulse Response for Strong Reaction Group", "Impulse Response for Weak Reaction Group"))
-bazplotirf.double(irf.withci = larrect.irf[[num]][[2]], irf.noci = smlrect.irf[[num]][[2]], plot.type = "multiple", 
-                  ylab = var.names.main.graph, 
-                  legendbot = c("Impulse Response for Strong Reaction Group", "Impulse Response for Weak Reaction Group"))
-allqs$`20`
+#imp = c("demeaned_int", "demeaned_lhou")
+#larrect.irf <- list()
+#smlrect.irf <- list()
+#for(j in 1:length(namen)) {
+#  for(i in 1:2) {
+#    larrect.irf[[namen[j]]][[imp[i]]] <- bazirf.varest(larrect.var[[j]], impulse = imp[i], n.ahead = steps, ortho = T, ci = conf, runs = 100, seed = 7540)
+#    smlrect.irf[[namen[j]]][[imp[i]]] <- bazirf.varest(smlrect.var[[j]], impulse = imp[i], n.ahead = steps, ortho = T, ci = conf, runs = 100, seed = 3047)
+#  }
+#}
+#num = "24"
+#bazplotirf.double(irf.withci = larrect.irf[[num]][[1]], irf.noci = smlrect.irf[[num]][[1]], plot.type = "multiple", 
+#                  ylab = var.names.main.graph, 
+#                  legendbot = c("Impulse Response for Strong Reaction Group", "Impulse Response for Weak Reaction Group"))
+#bazplotirf.double(irf.withci = larrect.irf[[num]][[2]], irf.noci = smlrect.irf[[num]][[2]], plot.type = "multiple", 
+ #                 ylab = var.names.main.graph, 
+ #                 legendbot = c("Impulse Response for Strong Reaction Group", "Impulse Response for Weak Reaction Group"))
+#allqs$`20`
 #4 is piy

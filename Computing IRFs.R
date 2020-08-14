@@ -18,7 +18,8 @@ irf.north.ortho <- list()
 irf.south.ortho <- list()
 irf.nogreece.ortho <- list()
 irf.noireland.ortho <- list()
-
+irf.ident2.ortho <- list()
+irf.ident3.ortho <- list()
 
 for(i in 1:5) {
   irf.main.ortho.1[[var.names.main[i]]] <- bazirf.varest(fevar.main, impulse = imp1[i], n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 253)
@@ -40,9 +41,6 @@ for(i in 1:length(var.names.assets)) {
   irf.assets.ortho[[var.names.assets[i]]] <- bazirf.varest(fevar.assets, impulse = imp2[i] ,n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 678)
 }
 
-#allirfs.notnormal$maxreact <- irf.maxreaction.ortho
-#allirfs.notnormal$minreact <- irf.minreaction.ortho
-
 allirfs.notnormal <- list(main = irf.main.ortho.1, exog = irf.exog.ortho.1, pre = irf.pre.ortho,post = irf.post.ortho, 
                 maxreact = irf.maxreaction.ortho, minreact = irf.minreaction.ortho, north = irf.north.ortho,
                 south = irf.south.ortho, nogreece = irf.nogreece.ortho, noireland = irf.noireland.ortho, 
@@ -62,15 +60,17 @@ irf.north.ortho <- bazirf.varest(fevar.north, n.ahead = steps, ortho = T, ci = c
 irf.south.ortho <- bazirf.varest(fevar.south, n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 3524)
 irf.nogreece.ortho <- bazirf.varest(fevar.nogreece, n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 4749)
 irf.noireland.ortho <- bazirf.varest(fevar.noireland, n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 2015)
+irf.ident2.ortho <- bazirf.varest(fevar.ident2, n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 8662)
+irf.ident3.ortho <- bazirf.varest(fevar.ident3, n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 1923)
 irf.assets.ortho <- bazirf.varest(fevar.assets, n.ahead = steps, ortho = T, ci = conf, runs = runs, seed = 678)
 
-#allirfs.multiple.notnormal$maxreact <- irf.maxreaction.ortho
-#allirfs.multiple.notnormal$minreact <- irf.minreaction.ortho
+#allirfs.multiple.notnormal$ident2 <- irf.ident2.ortho
+#allirfs.multiple.notnormal$ident3 <- irf.ident3.ortho
 
 allirfs.multiple.notnormal <- list(main = irf.main.ortho.1, exog = irf.exog.ortho.1, pre = irf.pre.ortho,post = irf.post.ortho, 
                          maxreact = irf.maxreaction.ortho, minreact = irf.minreaction.ortho, north = irf.north.ortho,
                          south = irf.south.ortho, nogreece = irf.nogreece.ortho, noireland = irf.noireland.ortho, 
-                         assets = irf.assets.ortho)
+                         assets = irf.assets.ortho, ident2 = irf.ident2.ortho, ident3 = irf.ident3.ortho)
 save(allirfs.multiple.notnormal, file = "~/Thesis/Data/All Multiple IRFs not normal.Rdata")
 
 

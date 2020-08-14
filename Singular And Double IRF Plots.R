@@ -77,7 +77,8 @@ for(i in 1:length(var.names.main)) {
   dev.off()
 }
 
-
+min(allirfs$maxreact$int$irf$demeaned_int[,1])
+min(allirfs$minreact$int$irf$demeaned_int[,1])
 ##################################################################################
 #load(file = "~/Thesis/Data/All IRFs.Rdata")
 

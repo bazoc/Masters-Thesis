@@ -1,6 +1,6 @@
 source("~/Thesis/R Code/setup.R")
 load("~/Thesis/Data/Sorting result.Rdata")
-
+library(xlsx)
 
 #####Interest rates all observations############
 fevar.main <- bazfevar(main.panel, p = laglen, type = "const")
@@ -79,8 +79,18 @@ fevar.neither <- bazfevar(y = neither.panel,
                             type = "const") 
 
 #########################Other identification####################################
-other.panel <- main.panel[,c("Country", "yqtr")]
+var.names.ident2 <- c("lgdp", "ldef", "int", "lres", "lhou")
+var.names.ident3 <- c("ldef", "int", "lres", "lgdp", "lhou")
 
+ident2.panel <- main.panel[,c("Country", "yqtr", var.names.ident2)]
+ident3.panel <- main.panel[,c("Country", "yqtr", var.names.ident3)]
+
+fevar.ident2 <- bazfevar(y = ident2.panel,
+                         p = laglen,
+                         type = "const")
+fevar.ident3 <- bazfevar(y = ident3.panel,
+                         p = laglen,
+                         type = "const")
 ##############################Summaries##########################
 summary(fevar.main)$roots
 summary(fevar.exog)$roots
@@ -120,6 +130,7 @@ for(j in 1:length(var.names.main)) {
   #Round it as well
   coeftable <- maincoeftable[[var.names.main[j]]]
   coeftable <- as.data.frame(coeftable)
+  coeftable[,c(2,3)] <- round(coeftable[,c(2,3)], 4)
   coeftable[,2] <- as.character(coeftable[,2])
   for(i in 1:(length(var.names.main)*laglen)) { # All the coefficients
     if(coeftable[i,5] < .01) {
@@ -132,14 +143,18 @@ for(j in 1:length(var.names.main)) {
       coeftable[i,2] <- paste(coeftable[i,2], "*")
     }
   }
+  coeftable[,3] <- as.character(coeftable[,3])
+  coeftable[,3] <- paste("n", "(", coeftable[,3], ")", sep = "")
   maincoeftable[[var.names.main[j]]] <- coeftable
 }
+maincoeftable
 
-write.csv(maincoeftable$lgdp, "~/Thesis/Data/Main Coefficients/GDP.csv")
-write.csv(maincoeftable$lres, "~/Thesis/Data/Main Coefficients/RES.csv")
-write.csv(maincoeftable$ldef, "~/Thesis/Data/Main Coefficients/DEF.csv")
-write.csv(maincoeftable$int , "~/Thesis/Data/Main Coefficients/INT.csv")
-write.csv(maincoeftable$lhou, "~/Thesis/Data/Main Coefficients/HOU.csv")
+
+#write.csv(maincoeftable$lgdp, "~/Thesis/Data/Main Coefficients/GDP.csv")
+#write.csv(maincoeftable$lres, "~/Thesis/Data/Main Coefficients/RES.csv")
+#write.csv(maincoeftable$ldef, "~/Thesis/Data/Main Coefficients/DEF.csv")
+#write.csv(maincoeftable$int , "~/Thesis/Data/Main Coefficients/INT.csv")
+#write.csv(maincoeftable$lhou, "~/Thesis/Data/Main Coefficients/HOU.csv")
 
 
 svar.main <- SVAR(fevar.main, Amat = NULL, Bmat = bmat) #Exact same as the other orthogonalised
