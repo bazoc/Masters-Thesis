@@ -4,7 +4,7 @@ library(gridExtra)
 
 notlogged.panel$Country = factor(notlogged.panel$Country)
 onecountry <- filter(notlogged.panel,
-                     Country == "Austria")
+                     Country == "Ireland")
 onecountry$ass <- onecountry$ass/1000
 labsize = 6
 titsize = 8

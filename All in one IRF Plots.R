@@ -66,7 +66,7 @@ dev.off()
 #Assets and Main
 #png("~/Thesis/Figures and Graphs/assets irf/2in1.png", width = width, height = height)
 setEPS()
-postscript("~/Thesis/Figures and Graphs/assets/2in1.eps")
+postscript("~/Thesis/Figures and Graphs/assets irf/2in1.eps")
 bazplotirf.allinone.double(irf.withci = allirfs.multiple$assets, irf.noci = allirfs.multiple$main, plot.type = "multiple", 
                            ylab = var.names.assets.graph, legendbot = c("Impulse Response - CB Assets", "Impulse Response - Main"),
                            main = "temp assets")
@@ -76,6 +76,26 @@ dev.off()
 #png("~/Thesis/Figures and Graphs/ortho 2/2in1.eps", width = width, height = height)
 #bazplotirf.allinone.double(irf.withci = allirfs.multiple$ortho2, irf.noci = allirfs.multiple$main, plot.type = "multiple", ylab = var.names.main)
 #dev.off()
+
+############Triple IRF plots##########################
+#Identifications
+setEPS()
+postscript("~/Thesis/Figures and Graphs/Triple/ident.eps")
+bazplotirf.allinone.triple(irf.withci = allirfs.multiple$main, irf.noci1 = allirfs.multiple$ident2, irf.noci2 = allirfs.multiple$ident3, plot.type = "multiple", 
+                           ylab = var.names.main.graph, main = "Impulse Response Functions for the Differening Identification methods", lwd = 2, confon = F, 
+                           legendbot = c("Baseline Specification", "Alternative Identification One", "Alternative Identification Two")
+)
+dev.off()
+
+
+#No Ireland, Greece,  Germany
+setEPS()
+postscript("~/Thesis/Figures and Graphs/Triple/countries.eps")
+bazplotirf.allinone.triple(irf.withci = allirfs.multiple$noireland, irf.noci1 = allirfs.multiple$nogreece, irf.noci2 = allirfs.multiple$nogermany, plot.type = "multiple", 
+                           ylab = var.names.main.graph, main = "Impulse Response Functions without Germany, Greece and Ireland", lwd = 2, confon = F, 
+                           legendbot = c("No Ireland", "No Greece", "No Germany")
+)
+dev.off()
 
 ###########testing#############
 #load(file = "~/Thesis/Data/All Multiple IRFs.Rdata")

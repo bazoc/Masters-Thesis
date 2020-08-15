@@ -71,6 +71,13 @@ fevar.noireland <- bazfevar(y = noireland.panel,
                             p = laglen,
                             type = "const") 
 
+#############################No Germany###############################
+nogermany.panel <- filter(main.panel,
+                          Country != "Germany")
+fevar.nogermany <- bazfevar(y = nogermany.panel,
+                            p = laglen,
+                            type = "const")
+
 ###########################No Greece nor Ireland#################################
 neither.panel <- filter(main.panel,
                         Country != "Ireland" & Country != "Greece")

@@ -111,8 +111,8 @@ plot.multiple.double <- function(dp, nc = nc, ...) {
     abline(h = 0, col = "red")
     
     lines(x = xy1$x, y = xy1$y, col = col[1], lty = 1, lwd = lwd[1])#, ...)
-    lines(x = xy2$x, y = xy2$y, col = "red", lty = 4, lwd = lwd[1])#, ...)
-    lines(x = xy3$x, y = xy3$y, col = "blue", lty = 3, lwd = lwd[1])#, ...)
+    lines(x = xy2$x, y = xy2$y, col = "blue", lty = 3, lwd = lwd[1])#, ...)
+    lines(x = xy3$x, y = xy3$y, col = "red", lty = 4, lwd = lwd[1])#, ...)
 
     if(graphnum == nvr) {
       axis(1, at = NULL, cex = .0001, las = 1)
@@ -151,8 +151,8 @@ if (plot.type == "multiple") {
 }
 par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
 plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
-legend('bottom',legend = c(legendbot) ,col = c("black", "blue", "grey"), 
-       lwd = 2, lty = c(1, 2, -3, -1), pch = c(-1, -1, -1, 15), xpd = TRUE, cex = 1.2, seg.len=3, bty = 'n')
+legend('bottom',legend = c(legendbot) ,col = c("black", "blue", "red"), 
+       lwd = 2, lty = c(1, 3, 2), xpd = TRUE, cex = 1.2, seg.len=3, bty = 'n')
 }
 
 bazplotirf.allinone.triple(irf.withci = allirfs.multiple$main, irf.noci1 = allirfs.multiple$ident2, irf.noci2 = allirfs.multiple$ident3, plot.type = "multiple", 
