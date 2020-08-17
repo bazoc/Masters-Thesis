@@ -50,7 +50,7 @@ for(i in 1:length(var.names.main)) {
 
 #Max and min
 maintitlemaxmin <-   paste("Orthogonal Impulse Response for Strong and Weak Reaction Groups from", var.names.main.graph, sep = " ")
-savelocation.maxmin <- paste("~/Thesis/FiguresandGraphs/Double/MaxandMin/", var.names.main, ".eps", sep = "")
+savelocation.maxmin <- paste("~/Thesis/FiguresandGraphs/Double/MaxandMin/m", var.names.main, ".eps", sep = "")
 for(i in 1:length(var.names.main)) {
   #png(savelocation.maxmin[i])
   setEPS()
@@ -63,7 +63,7 @@ for(i in 1:length(var.names.main)) {
 }
 
 #North and South
-savelocation.northsouth <- paste("~/Thesis/FiguresandGraphs/Double/NorthandSouth/", var.names.main, ".eps", sep = "")
+savelocation.northsouth <- paste("~/Thesis/FiguresandGraphs/Double/NorthandSouth/n", var.names.main, ".eps", sep = "")
 maintitlenorthsouth <-  paste("Orthogonal Impulse Response for Northern and Southern Groups from", var.names.main.graph, sep = " ")
 
 for(i in 1:length(var.names.main)) {
