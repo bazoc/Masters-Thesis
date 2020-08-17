@@ -76,14 +76,14 @@ assplot <- ggplot(onecountry, aes(y = `ass`, x = `yqtr`)) +
 
 #grid.arrange(gdpplot, houplot, defplot, resplot, intplot, assplot, nrow = 3)
 
-#png("~/Thesis/Figures and Graphs/variablesgraph.png", width = 750, height = 900)
+#png("~/Thesis/FiguresandGraphs/variablesgraph.png", width = 750, height = 900)
 #grid_arrange_shared_legend(gdpplot, houplot, 
 #                         defplot, resplot, intplot, assplot, nrow = 3, ncol = 2,
 #                          position = "bottom")
 #dev.off()
 
 setEPS()
-postscript("~/Thesis/Figures and Graphs/variablesgraph.eps")
+postscript("~/Thesis/FiguresandGraphs/variablesgraph.eps")
 grid_arrange_shared_legend(gdpplot, houplot, 
                            defplot, resplot, intplot, assplot, nrow = 3, ncol = 2,
                            position = "bottom")

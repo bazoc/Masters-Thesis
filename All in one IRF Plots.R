@@ -5,11 +5,11 @@ height = 600
 load(file = "~/Thesis/Data/All Multiple IRFs.Rdata")
 
 ######Single plots######
-mainfolder <- "~/Thesis/Figures and Graphs/"
-subfolders <- c(main = "main irf", exog = "exog irf", pre =  "pre irf", post =  "post irf", 
-                maxreact = "max react", minreact = "min react", north = "north", 
-                south = "south", nogreece = "no greece", noireland = "no ireland", 
-                assets = "assets irf")
+mainfolder <- "~/Thesis/FiguresandGraphs/"
+subfolders <- c(main = "main", exog = "exog", pre =  "pre", post =  "post", 
+                maxreact = "maxreact", minreact = "minreact", north = "north", 
+                south = "south", nogreece = "nogreece", noireland = "noireland", 
+                assets = "assets")
 all(names(allirfs.multiple) == names(subfolders))
 savelocation <- paste(mainfolder, subfolders, "/Full.eps", sep = "")
 
@@ -46,41 +46,41 @@ dev.off()
 
 #######2 in 1 plots###########
 #No Greece and Main
-#png("~/Thesis/Figures and Graphs/no greece/2in1.png", width = width, height = height)
+#png("~/Thesis/FiguresandGraphs/no greece/2in1.png", width = width, height = height)
 setEPS()
-postscript("~/Thesis/Figures and Graphs/no greece/2in1.eps")
+postscript("~/Thesis/FiguresandGraphs/nogreece/2in1.eps")
 bazplotirf.allinone.double(irf.withci = allirfs.multiple$nogreece, irf.noci = allirfs.multiple$main, plot.type = "multiple", 
                            ylab = var.names.main.graph, legendbot = c("Impulse Response w/o Greece", "Impulse Response - Main"),
                            main = "temp no greece")
 dev.off()
 
 #No Ireland and Main
-#png("~/Thesis/Figures and Graphs/no ireland/2in1.png", width = width, height = height)
+#png("~/Thesis/FiguresandGraphs/noireland/2in1.png", width = width, height = height)
 setEPS()
-postscript("~/Thesis/Figures and Graphs/no ireland/2in1.eps")
+postscript("~/Thesis/FiguresandGraphs/no ireland/2in1.eps")
 bazplotirf.allinone.double(irf.withci = allirfs.multiple$noireland, irf.noci = allirfs.multiple$main, plot.type = "multiple", 
                            ylab = var.names.main.graph, legendbot = c("Impulse Response w/o Ireland", "Impulse Response - Main"),
                            main = "temp no ire")
 dev.off()
 
 #Assets and Main
-#png("~/Thesis/Figures and Graphs/assets irf/2in1.png", width = width, height = height)
+#png("~/Thesis/FiguresandGraphs/assets/2in1.png", width = width, height = height)
 setEPS()
-postscript("~/Thesis/Figures and Graphs/assets irf/2in1.eps")
+postscript("~/Thesis/FiguresandGraphs/assets irf/2in1.eps")
 bazplotirf.allinone.double(irf.withci = allirfs.multiple$assets, irf.noci = allirfs.multiple$main, plot.type = "multiple", 
                            ylab = var.names.assets.graph, legendbot = c("Impulse Response - CB Assets", "Impulse Response - Main"),
                            main = "temp assets")
 dev.off()
 
 #2 identification schemes
-#png("~/Thesis/Figures and Graphs/ortho 2/2in1.eps", width = width, height = height)
+#png("~/Thesis/FiguresandGraphs/ortho 2/2in1.eps", width = width, height = height)
 #bazplotirf.allinone.double(irf.withci = allirfs.multiple$ortho2, irf.noci = allirfs.multiple$main, plot.type = "multiple", ylab = var.names.main)
 #dev.off()
 
 ############Triple IRF plots##########################
 #Identifications
 setEPS()
-postscript("~/Thesis/Figures and Graphs/Triple/ident.eps")
+postscript("~/Thesis/FiguresandGraphs/Triple/ident.eps")
 bazplotirf.allinone.triple(irf.withci = allirfs.multiple$main, irf.noci1 = allirfs.multiple$ident2, irf.noci2 = allirfs.multiple$ident3, plot.type = "multiple", 
                            ylab = var.names.main.graph, main = "Impulse Response Functions for the Differening Identification methods", lwd = 2, confon = F, 
                            legendbot = c("Baseline Specification", "Alternative Identification One", "Alternative Identification Two")
@@ -90,7 +90,7 @@ dev.off()
 
 #No Ireland, Greece,  Germany
 setEPS()
-postscript("~/Thesis/Figures and Graphs/Triple/countries.eps")
+postscript("~/Thesis/FiguresandGraphs/Triple/countries.eps")
 bazplotirf.allinone.triple(irf.withci = allirfs.multiple$noireland, irf.noci1 = allirfs.multiple$nogreece, irf.noci2 = allirfs.multiple$nogermany, plot.type = "multiple", 
                            ylab = var.names.main.graph, main = "Impulse Response Functions without Germany, Greece and Ireland", lwd = 2, confon = F, 
                            legendbot = c("No Ireland", "No Greece", "No Germany")

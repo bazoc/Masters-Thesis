@@ -2,11 +2,11 @@ load(file = "~/Thesis/Data/All IRFs.Rdata")
 #Options
 source("~/Thesis/R Code/Steps, Conf, Runs.R")
 
-mainfolder <- "~/Thesis/Figures and Graphs/"
-subfolders <- c(main = "main irf", exog = "exog irf", pre =  "pre irf", post =  "post irf", 
-                maxreact = "max react", minreact = "min react", north = "north", 
-                south = "south", nogreece = "no greece", noireland = "no ireland", 
-                assets = "assets irf")
+mainfolder <- "~/Thesis/FiguresandGraphs/"
+subfolders <- c(main = "main", exog = "exog", pre =  "pre", post =  "post", 
+                maxreact = "maxreact", minreact = "minreact", north = "north", 
+                south = "south", nogreece = "nogreece", noireland = "noireland", 
+                assets = "assets")
 all(names(subfolders) == names(allirfs))
 folders <- paste(mainfolder, subfolders, sep = "")
 novars <- length(folders)
@@ -37,7 +37,7 @@ for(i in 1:length(var.names.assets)) {
 
 #Pre and post
 maintitleprepost <- paste("Orthogonal Impulse Response for Pre and Post Crisis VARs from", var.names.main.graph, sep = " ")
-savelocation.prepost <- paste("~/Thesis/Figures and Graphs/Double/Pre and Post/", var.names.main, ".eps", sep = "")
+savelocation.prepost <- paste("~/Thesis/FiguresandGraphs/Double/PreandPost/", var.names.main, ".eps", sep = "")
 for(i in 1:length(var.names.main)) {
   # png(savelocation.prepost[i])
   setEPS()
@@ -50,7 +50,7 @@ for(i in 1:length(var.names.main)) {
 
 #Max and min
 maintitlemaxmin <-   paste("Orthogonal Impulse Response for Strong and Weak Reaction Groups from", var.names.main.graph, sep = " ")
-savelocation.maxmin <- paste("~/Thesis/Figures and Graphs/Double/Max and Min/", var.names.main, ".eps", sep = "")
+savelocation.maxmin <- paste("~/Thesis/FiguresandGraphs/Double/MaxandMin/", var.names.main, ".eps", sep = "")
 for(i in 1:length(var.names.main)) {
   #png(savelocation.maxmin[i])
   setEPS()
@@ -63,7 +63,7 @@ for(i in 1:length(var.names.main)) {
 }
 
 #North and South
-savelocation.northsouth <- paste("~/Thesis/Figures and Graphs/Double/North and South/", var.names.main, ".eps", sep = "")
+savelocation.northsouth <- paste("~/Thesis/FiguresandGraphs/Double/NorthandSouth/", var.names.main, ".eps", sep = "")
 maintitlenorthsouth <-  paste("Orthogonal Impulse Response for Northern and Southern Groups from", var.names.main.graph, sep = " ")
 
 for(i in 1:length(var.names.main)) {

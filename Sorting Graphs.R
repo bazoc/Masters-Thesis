@@ -5,7 +5,7 @@ load("~/Thesis/Data/Sorting result.Rdata")
 
 
 setEPS()
-postscript("~/Thesis/Figures and Graphs/sortingresultsbar.eps")
+postscript("~/Thesis/FiguresandGraphs/sortingresultsbar.eps")
 
 par(oma = c(3,1,1,1))
 barplot(allqs$`24`$sorttable, las = 2, main = "Results of Grouping Algorithm",
@@ -32,7 +32,7 @@ imfmort <- c("Austria" = 0.31,
              "Portugal" = NA,
              "Spain" = 0.4)
 setEPS()
-postscript("~/Thesis/Figures and Graphs/strongimfmort.eps")
+postscript("~/Thesis/FiguresandGraphs/strongimfmort.eps")
 
 plot(x = imfmort, 
      y = countfreq, 
