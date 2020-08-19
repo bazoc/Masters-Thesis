@@ -46,30 +46,30 @@ dev.off()
 
 #######2 in 1 plots###########
 #No Greece and Main
-#png("~/Thesis/FiguresandGraphs/no greece/2in1.png", width = width, height = height)
+#png("~/Thesis/FiguresandGraphs/nogreece/2in1.png", width = width, height = height)
 setEPS()
 postscript("~/Thesis/FiguresandGraphs/nogreece/2in1.eps")
 bazplotirf.allinone.double(irf.withci = allirfs.multiple$nogreece, irf.noci = allirfs.multiple$main, plot.type = "multiple", 
-                           ylab = var.names.main.graph, legendbot = c("Impulse Response w/o Greece", "Impulse Response - Main"),
+                           ylab = var.names.main.graph, legendbot = c("Orthogonal Impulse Response w/o Greece", "Impulse Response - Baseline VAR"),
                            main = "temp no greece")
 dev.off()
 
 #No Ireland and Main
 #png("~/Thesis/FiguresandGraphs/noireland/2in1.png", width = width, height = height)
 setEPS()
-postscript("~/Thesis/FiguresandGraphs/no ireland/2in1.eps")
+postscript("~/Thesis/FiguresandGraphs/noireland/2in1.eps")
 bazplotirf.allinone.double(irf.withci = allirfs.multiple$noireland, irf.noci = allirfs.multiple$main, plot.type = "multiple", 
-                           ylab = var.names.main.graph, legendbot = c("Impulse Response w/o Ireland", "Impulse Response - Main"),
+                           ylab = var.names.main.graph, legendbot = c("Orthogonal Impulse Response w/o Ireland", "Impulse Response - Baseline VAR"),
                            main = "temp no ire")
 dev.off()
 
 #Assets and Main
 #png("~/Thesis/FiguresandGraphs/assets/2in1.png", width = width, height = height)
 setEPS()
-postscript("~/Thesis/FiguresandGraphs/assets irf/2in1.eps")
+postscript("~/Thesis/FiguresandGraphs/assets/2in1.eps")
 bazplotirf.allinone.double(irf.withci = allirfs.multiple$assets, irf.noci = allirfs.multiple$main, plot.type = "multiple", 
-                           ylab = var.names.assets.graph, legendbot = c("Impulse Response - CB Assets", "Impulse Response - Main"),
-                           main = "temp assets")
+                           ylab = var.names.assets.graph, legendbot = c("Orthogonal Impulse Response - CB Assets", "Impulse Response - Baseline VAR"),
+                           main = "Impulse Response Functions for VAR with CB Assets")
 dev.off()
 
 #2 identification schemes
@@ -82,7 +82,7 @@ dev.off()
 setEPS()
 postscript("~/Thesis/FiguresandGraphs/Triple/ident.eps")
 bazplotirf.allinone.triple(irf.withci = allirfs.multiple$main, irf.noci1 = allirfs.multiple$ident2, irf.noci2 = allirfs.multiple$ident3, plot.type = "multiple", 
-                           ylab = var.names.main.graph, main = "Impulse Response Functions for the Differening Identification methods", lwd = 2, confon = F, 
+                           ylab = var.names.main.graph, main = "Orthogonal Impulse Response Functions for the Differening Identification methods", lwd = 2, confon = F, 
                            legendbot = c("Baseline Specification", "Alternative Identification One", "Alternative Identification Two")
 )
 dev.off()
@@ -92,7 +92,7 @@ dev.off()
 setEPS()
 postscript("~/Thesis/FiguresandGraphs/Triple/countries.eps")
 bazplotirf.allinone.triple(irf.withci = allirfs.multiple$noireland, irf.noci1 = allirfs.multiple$nogreece, irf.noci2 = allirfs.multiple$nogermany, plot.type = "multiple", 
-                           ylab = var.names.main.graph, main = "Impulse Response Functions without Germany, Greece and Ireland", lwd = 2, confon = F, 
+                           ylab = var.names.main.graph, main = "Orthogonal Impulse Response Functions without Germany, Greece and Ireland", lwd = 2, confon = F, 
                            legendbot = c("No Ireland", "No Greece", "No Germany")
 )
 dev.off()

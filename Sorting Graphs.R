@@ -10,7 +10,8 @@ postscript("~/Thesis/FiguresandGraphs/sortingresultsbar.eps")
 par(oma = c(3,1,1,1))
 barplot(allqs$`24`$sorttable, las = 2, main = "Results of Grouping Algorithm",
         ylab = "No. of times in strong group",
-        xlab = NA, col = "lightblue")
+        xlab = NA, col = "lightblue", 
+        font.main = 1)
 abline(allqs$`20`$quants[1], b = c(0), col = "red", lwd = 2, lty = 2)
 abline(a = allqs$`20`$quants[2], b = c(0), col = "black", lwd = 2, lty = 2)
 

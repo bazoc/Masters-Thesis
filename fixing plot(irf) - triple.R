@@ -117,7 +117,7 @@ plot.multiple.double <- function(dp, nc = nc, ...) {
     if(graphnum == nvr) {
       axis(1, at = NULL, cex = .0001, las = 1)
     }
-    axis(2, at = NULL, cex = .0001, las = 1)
+    axis(2, at = NULL, cex = .0001, las = 1, cex.axis = .85)
     #if (!is.null(y1)) 
     #  lines(y1[, j], col = col[3], lty = lty[3], lwd = lwd[3])
     #if (!is.null(z1)) 
@@ -133,8 +133,10 @@ plot.multiple.double <- function(dp, nc = nc, ...) {
     }
     box()
   }
-  mtext(main, 3, line = 2, outer = TRUE, adj = adj.mtext, 
-        padj = padj.mtext, col = col.mtext)#, ...)
+  if(graphnum == 1) {
+    mtext(main, 3, line = 2, outer = TRUE, adj = adj.mtext, 
+          padj = padj.mtext, col = col.mtext, font = 1)#, ...)
+  }
   #mtext(sub, 1, line = 4, outer = TRUE, adj = adj.mtext, 
   #      padj = padj.mtext, col = col.mtext)#, ...)
 }
@@ -155,8 +157,8 @@ legend('bottom',legend = c(legendbot) ,col = c("black", "blue", "red"),
        lwd = 2, lty = c(1, 3, 2), xpd = TRUE, cex = 1.2, seg.len=3, bty = 'n')
 }
 
-bazplotirf.allinone.triple(irf.withci = allirfs.multiple$main, irf.noci1 = allirfs.multiple$ident2, irf.noci2 = allirfs.multiple$ident3, plot.type = "multiple", 
-                           ylab = var.names.main.graph, main = "poodidyscoop", lwd = 2, confon = F)
-irf.withci = allirfs.multiple$main
-irf.noci1 = allirfs.multiple$ident2
-irf.noci2 = allirfs.multiple$ident3
+#bazplotirf.allinone.triple(irf.withci = allirfs.multiple$main, irf.noci1 = allirfs.multiple$ident2, irf.noci2 = allirfs.multiple$ident3, plot.type = "multiple", 
+#                           ylab = var.names.main.graph, main = "poodidyscoop", lwd = 2, confon = F)
+#irf.withci = allirfs.multiple$main
+#irf.noci1 = allirfs.multiple$ident2
+#irf.noci2 = allirfs.multiple$ident3

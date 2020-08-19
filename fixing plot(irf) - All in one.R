@@ -63,9 +63,9 @@ bazplotirf.allinone <- function (x, plot.type = c("multiple"),
         abline(h = 0, col = "red")
         lines(x = xy$x, y = xy$y, col = col[1], lty = lty[1], lwd = lwd[1], ...)
         
-        axis(2, at = NULL, cex = .0001, las = 1)
+        axis(2, at = NULL, cex.axis = .85, las = 1)
         if(graphnum == nvr) {
-          axis(1, at = NULL, cex = .0001, las = 1)
+          axis(1, at = NULL, las = 1)
           
         }
         
@@ -75,16 +75,18 @@ bazplotirf.allinone <- function (x, plot.type = c("multiple"),
           lines(z[, j], col = col[3], lty = lty[3], lwd = lwd[3])
         if(graphnum == 1) {
           mtext(ylab[j], 3, line = 1, outer = F, adj = adj.mtext, 
-                padj = padj.mtext, col = col.mtext)#, ...)
+                padj = padj.mtext, col = col.mtext, font = 1, cex = .9)
         }
         if(j == 1) {
           mtext(cause, 2, line = 3, outer = FALSE, adj = adj.mtext, 
-                padj = padj.mtext, col = col.mtext)#, ...)
+                padj = padj.mtext, col = col.mtext, cex = .9)
         }
         box()
-      }
+    }
+    if(graphnum == 1) {
       mtext(main, 3, line = 2, outer = TRUE, adj = adj.mtext, 
-            padj = padj.mtext, col = col.mtext)#, ...)
+            padj = padj.mtext, col = col.mtext, font = 1)#, ...)
+    }
       #mtext(sub, 1, line = 4, outer = TRUE, adj = adj.mtext, 
       #      padj = padj.mtext, col = col.mtext)#, ...)
   }
@@ -101,5 +103,5 @@ bazplotirf.allinone <- function (x, plot.type = c("multiple"),
   plot(0, 0, type = 'l', bty = 'n', xaxt = 'n', yaxt = 'n')
   legend('bottom',legend = c(legendbot, "95% Bootstrapped C.I. - 1000 Runs") ,col = c("black", "red"), lwd = 2, lty = c(1, 3), xpd = TRUE, cex = 1.2, seg.len=3, bty = 'n')
 }
-#bazplotirf.allinone(temp, plot.type = "multiple", ylab = var.names.main, lwd = 1.6)
+#bazplotirf.allinone(allirfs.multiple[[j]], plot.type = "multiple", ylab = var.names.main.graph, legendbot = "Impulse Response", main = maintitles[j])
 #dev.off()

@@ -104,10 +104,10 @@ bazplotirf.allinone.double <- function (irf.withci = NULL, irf.noci = NULL, plot
       if(!(j %in% differ)) {
         lines(x = xy2$x, y = xy2$y, col = "blue", lty = lty[3], lwd = lwd[1])#, ...)
       }
+      axis(2, at = NULL, cex.axis = .85, las = 1)
       if(graphnum == nvr) {
-        axis(1, at = NULL, cex = .0001, las = 1)
-      }
-      axis(2, at = NULL, cex = .0001, las = 1)
+        axis(1, at = NULL, las = 1)
+        }
       #if (!is.null(y1)) 
       #  lines(y1[, j], col = col[3], lty = lty[3], lwd = lwd[3])
       #if (!is.null(z1)) 
@@ -115,16 +115,18 @@ bazplotirf.allinone.double <- function (irf.withci = NULL, irf.noci = NULL, plot
       #abline(h = 0, col = "red")
       if(graphnum == 1) {
         mtext(ylab[j], 3, line = 1, outer = F, adj = adj.mtext, 
-              padj = padj.mtext, col = col.mtext)#, ...)
+              padj = padj.mtext, col = col.mtext, font = 1, cex = .9)
       }
       if(j == 1) {
         mtext(cause, 2, line = 3, outer = FALSE, adj = adj.mtext, 
-              padj = padj.mtext, col = col.mtext)#, ...)
+              padj = padj.mtext, col = col.mtext, cex = .9)
       }
-        box()
-      }
+      box()
+    }
+    if(graphnum == 1) {
       mtext(main, 3, line = 2, outer = TRUE, adj = adj.mtext, 
-            padj = padj.mtext, col = col.mtext)#, ...)
+            padj = padj.mtext, col = col.mtext, font = 1)#, ...)
+    }
       #mtext(sub, 1, line = 4, outer = TRUE, adj = adj.mtext, 
       #      padj = padj.mtext, col = col.mtext)#, ...)
   }
@@ -163,29 +165,28 @@ bazplotirf.allinone.double <- function (irf.withci = NULL, irf.noci = NULL, plot
       lines(x = xy$x, y = xy$y, col = col[1], lty = lty[1], lwd = lwd[1])#, ...)
       
       
-      axis(2, at = NULL, cex = .0001, las = 1)
+      axis(2, at = NULL, cex.axis = .85, las = 1)
       if(graphnum == nvr) {
-        axis(1, at = NULL, cex = .0001, las = 1)
-        
+        axis(1, at = NULL, cex.axis = .9, las = 1)
       }
-      
       #if (!is.null(y)) 
       #  lines(y[, j], col = col[3], lty = lty[3], lwd = lwd[3])
       #if (!is.null(z)) 
       #  lines(z[, j], col = col[3], lty = lty[3], lwd = lwd[3])
       if(graphnum == 1) {
         mtext(ylab[j], 3, line = 1, outer = F, adj = adj.mtext, 
-              padj = padj.mtext, col = col.mtext)#, ...)
+              padj = padj.mtext, col = col.mtext, font = 1, cex = .9)
       }
       if(j == 1) {
         mtext(cause, 2, line = 3, outer = FALSE, adj = adj.mtext, 
-              padj = padj.mtext, col = col.mtext)#, ...)
+              padj = padj.mtext, col = col.mtext, cex = .9)
       }
       box()
     }
-    mtext(main, 3, line = 2, outer = TRUE, adj = adj.mtext, 
-          padj = padj.mtext, col = col.mtext)#, ...)
-    #mtext(sub, 1, line = 4, outer = TRUE, adj = adj.mtext, 
+    if(graphnum == 1) {
+      mtext(main, 3, line = 2, outer = TRUE, adj = adj.mtext, 
+            padj = padj.mtext, col = col.mtext, font = 1)#, ...)
+    }    #mtext(sub, 1, line = 4, outer = TRUE, adj = adj.mtext, 
     #      padj = padj.mtext, col = col.mtext)#, ...)
   }
   
